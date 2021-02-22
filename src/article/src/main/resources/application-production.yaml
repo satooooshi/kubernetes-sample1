@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    include:
+      - base
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://articledb:5432/article
+    username: ${database.username}
+    password: ${database.password}
+# following credentials need override by environment variables
+database:
+  username: ''  # DATABASE_USERNAME
+  password: ''  # DATABASE_PASSWORD
