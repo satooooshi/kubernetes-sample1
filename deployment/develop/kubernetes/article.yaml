@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: article
+  name: article
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: article
+  template:
+    metadata:
+      labels:
+        app: article
+      name: article
+    spec:
+      containers:
+      - name: article
+        image: article:dev
+        env:
+        - name: DEBUG
+          value: 'false'
+        - name: ENABLE_DEBUGGER
+          value: 'false'
+        - name: DEBUGGER_PORT
+          value: '8000'
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        ports:
+        - name: web
+          containerPort: 8080
+          protocol: TCP
+        - name: debugger
+          containerPort: 8000
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: article
+  name: article
+spec:
+  type: ClusterIP
+  selector:
+    app: article
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+  # don't expose debugger port

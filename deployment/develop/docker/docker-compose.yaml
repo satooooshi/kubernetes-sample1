@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+
+  articledb:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: article
+    volumes:
+      - type: bind
+        source: ../../../src/article/database/schema.sql
+        target: /docker-entrypoint-initdb.d/schema.sql
+        read_only: true
+    ports:
+      - '127.0.0.1:5431:5432'  # postgres access from host
+
+#  accesscountdb:
+#    image: postgres:13-alpine
+#    environment:
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - '127.0.0.1:5432:5432'  # postgres access from host
+
+  article:
+    image: article:dev-docker
+    environment:
+      DEBUG: 'false'
+      ENABLE_DEBUGGER: 'false'
+      DEBUGGER_PORT: '8000'
+    volumes:
+      - type: bind
+        source: ../../../src/article/
+        target: /article/
+    ports:
+      - '127.0.0.1:8081:8080'  # web
+      - '127.0.0.1:8001:8000'  # debugger
+
+#  accesscount:
+#    image: accesscount:dev-docker
+#    environment:
+#      DEBUG: 'false'
+#      ENABLE_DEBUGGER: 'false'
+#      DEBUGGER_PORT: '8000'
+#    volumes:
+#      - type: bind
+#        source: ../../../src/accesscount/
+#        target: /accesscount/
+#    ports:
+#      - '127.0.0.1:8082:8080'  # web
+#      - '127.0.0.1:8002:8000'  # debugger
