@@ -1,23 +1,130 @@
 # README.md
 
-## Project design
+## Project layout
 
-```txt
-docker
-  (debugging) -> maven
-                -> spring-boot-devtools
-  (build)     -> maven
-                -> package
-  (run app)   -> java -jar
-                -> spring-boot
+- `deployment`
+
+  Deployment manifest for develop/production release
+
+- `package`
+
+  Manifests for packaging (ex. `Dockerfile`) for develop/production release
+
+- `scripts`
+
+  Script files for build, run, and other development tasks.
+
+- `src`
+
+  Subprojects for application code.
+
+## Architecture
+
+```mermaid
+%% TODO make picture
+graph LR
+  ui["UI"] -- "get article" --> article["Article"]
+  ui -- "get ranking" --> rank["Rank"]
+  article -- "update access count" --> accesscount["AccessCount"]
+  rank -- "get access count" --> accesscount
+  subgraph articlesvc["Article Service"]
+    article -- "get article" --> articledb[("Article DB")]
+  end
+  subgraph accesscountsvc["AccessCount Service"]
+    accesscount -- "get/update access count" --> accesscountdb[("AccessCount DB")]
+  end
+  subgraph ranksvc["Rank Service"]
+    rank -- "get/update ranking" --> rankdb[("Rank DB")]
+  end
+```
+
+```mermaid
+%% こういう、Kubernetesリソースを意識した図もあったほうがよさそう
+graph TD
+  browser[Browser] --> articleIng
+  browser --> rankIng
+  subgraph cluster["Kubernetes cluster"]
+    articlePod --> accesscountSvc
+    rankPod --> accesscountSvc
+    subgraph articleApp["app: Article"]
+      articleIng(["ing/article"]) --> articleSvc
+      articleSvc(["svc/article"]) --> articlePod
+      articlePod --> articleDBSvc
+      subgraph articleDeploy["deploy/article"]
+        subgraph articleRs["rs/article-*"]
+          articlePod(["pod/article-*"])
+        end
+      end
+      articleDBSvc(["svc/articledb"]) --> articleDBPod
+      subgraph articleDBSts["sts/articledb"]
+        articleDBPod(["pod/articledb-*"])
+      end
+    end
+    subgraph accesscountApp["app: AccessCount"]
+      accesscountSvc(["svc/accesscount"]) --> accesscountPod
+      accesscountPod --> accesscountDBSvc
+      subgraph accesscountDeploy["deploy/accesscount"]
+        subgraph accesscountRs["rs/accesscount-*"]
+          accesscountPod(["pod/accesscount-*"])
+        end
+      end
+      accesscountDBSvc(["svc/accesscountdb"]) --> accesscountDBPod
+      subgraph accesscountDBSts["sts/accesscountdb"]
+        accesscountDBPod(["pod/accesscountdb-*"])
+      end
+    end
+    subgraph rankApp["app: Rank"]
+      rankIng(["ing/rank"]) --> rankSvc
+      rankSvc(["svc/rank"]) --> rankPod
+      rankPod --> rankDBSvc
+      subgraph rankDeploy["deploy/rank"]
+        subgraph rankRs["rs/rank-*"]
+          rankPod(["pod/rank-*"])
+        end
+      end
+      rankDBSvc(["svc/rankdb"]) --> rankDBPod
+      subgraph rankDBSts["sts/rankdb"]
+        rankDBPod(["pod/rankdb-*"])
+      end
+    end
+  end
 ```
 
 ## Develop
 
-### Recommended environment
+> Replace `${component}` to component name. For example: `article`, `accesscount`, or `rank`.
+
+### Develop with docker (Recommended)
+
+- Build container images for development:
+
+  ```bash
+  ./scripts/build-develop-docker.sh "${component}"
+  ```
+
+  This script build and update container images named `${component}:dev-docker`
+
+- Run container:
+
+  ```bash
+  ./scripts/run-develop-docker.sh "${component}"
+  ```
+
+- Or run all containers:
+
+  ```bash
+  ./scripts/docker-compose.sh up -d
+  ```
+
+### Develop with local Kubernetes
+
+
+
+### Develop without container
 
 > You can install these by [SDKMAN!](https://sdkman.io)
-> ```
+>
+> ```bash
 > curl -s "https://get.sdkman.io" | bash
 > sdk i java 11.0.10.hs-adpt
 > sdk i maven 3.6.3
@@ -26,6 +133,19 @@ docker
 - JDK 11.0.10 hotspot
   - use AdoptOpenJDK
 - Apache Maven 3.6.3
+- docker 20.10.2
+
+Before you start application, you can start backend database:
+
+```bash
+./scripts/docker-compose.sh "${component}db"
+```
+
+Run your application:
+
+```bash
+./scripts/run-develop-host.sh "${component}"
+```
 
 ## Troubleshoot memo
 
@@ -45,6 +165,6 @@ docker
 - Character encoding error(文字化け)
   - Many java tools output the error message to STDERR not STDOUT. If you use `iconv` command, may need redirect not only STDOUT but also STDERR to `iconv` like:
 
-    ```sh
+    ```bash
     mvn install 2>&1 | iconv -f sjis -t utf-8
     ```
