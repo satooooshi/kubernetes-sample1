@@ -36,17 +36,20 @@ public class ArticleRepository {
 
     @Transactional
     public List<ArticleEntity> findAll() {
-        return this.jdbcTemplate.query(SQL_FIND_ALL, ArticleRepository.getRowMapper());
+        LOGGER.debug("execute SQL: {}", SQL_FIND_ALL);
+        return this.jdbcTemplate.query(SQL_FIND_ALL, (rs, __) -> ArticleRepository.map(rs));
     }
 
     @Transactional
     public ArticleEntity findById(final Long id) {
+        LOGGER.debug("execute SQL: {}; id = {}", SQL_FIND_ARTICLE_BY_ID, id);
         return this.jdbcTemplate.query(SQL_FIND_ARTICLE_BY_ID, Map.of("id", id), ArticleRepository.getResultSetExtractor());
     }
 
     @Transactional
     public List<ArticleEntity> findByAuthor(final String author) {
-        return this.jdbcTemplate.query(SQL_FIND_ARTICLE_BY_AUTHOR, Map.of("author", author), ArticleRepository.getRowMapper());
+        LOGGER.debug("execute SQL: {}; author = {}", SQL_FIND_ARTICLE_BY_AUTHOR, author);
+        return this.jdbcTemplate.query(SQL_FIND_ARTICLE_BY_AUTHOR, Map.of("author", author), (rs, __) -> ArticleRepository.map(rs));
     }
 
     private static ArticleEntity map(final ResultSet rs) throws SQLException {
@@ -57,21 +60,14 @@ public class ArticleRepository {
             , rs.getString("body") //
         );
     }
+
+    // ResultSetExtractorであることを明示しないと NamedParameterJdcbTemplate#query() メソッドが
+    // 次のどちらなのかコンパイラが決定できないためこの関数を使うことで明示する。
+    // - NamedParameterJdcbTemplate#query(String, Map, ResultSetExtractor)
+    // - NamedParameterJdcbTemplate#query(String, Map, RowCallbackHandler)
+    // ResultSetExtractor と RowCallbackHandler はlambda関数で書くと区別できない
     private static ResultSetExtractor<ArticleEntity> getResultSetExtractor() {
-        return new ResultSetExtractor<ArticleEntity>() {
-            @Override
-            public ArticleEntity extractData(final ResultSet rs) throws SQLException {
-                return ArticleRepository.map(rs);
-            }
-        };
-    }
-    private static RowMapper<ArticleEntity> getRowMapper() {
-        return new RowMapper<ArticleEntity>() {
-            @Override
-            public ArticleEntity mapRow(final ResultSet rs, final int rowNum) throws SQLException {
-                return ArticleRepository.map(rs);
-            }
-        };
+        return (rs) -> ArticleRepository.map(rs);
     }
 
 }
