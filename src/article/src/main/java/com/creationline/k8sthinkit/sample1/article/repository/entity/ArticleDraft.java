@@ -6,9 +6,7 @@ import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
-public class ArticleEntity {
-    @NonNull
-    private final Long id;
+public class ArticleDraft {
     @NonNull
     private final String title;
     @NonNull

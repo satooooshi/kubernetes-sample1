@@ -19,10 +19,13 @@ services:
 #    image: postgres:13-alpine
 #    environment:
 #      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: accesscount
 #    ports:
 #      - '127.0.0.1:5432:5432'  # postgres access from host
 
   article:
+    depends_on:
+      - articledb
     image: article:dev-docker
     environment:
       DEBUG: 'false'
@@ -37,6 +40,8 @@ services:
       - '127.0.0.1:8001:8000'  # debugger
 
 #  accesscount:
+#    depends_on:
+#      - accesscountdb
 #    image: accesscount:dev-docker
 #    environment:
 #      DEBUG: 'false'
