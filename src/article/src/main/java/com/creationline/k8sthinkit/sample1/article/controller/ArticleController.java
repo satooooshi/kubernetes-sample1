@@ -1,9 +1,6 @@
 package com.creationline.k8sthinkit.sample1.article.controller;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import com.creationline.k8sthinkit.sample1.article.controller.request.ArticleCreationRequest;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEntryResponse;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleNotFoundResponse;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleResponse;
 import com.creationline.k8sthinkit.sample1.article.repository.ArticleRepository;
-import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleDraft;
 import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleEntity;
 
 @RestController()
@@ -31,6 +31,9 @@ import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleEnti
 public class ArticleController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
+
+    private static final String MIMETYPE_CONSUMING = "application/json";
+    private static final String MIMETYPE_PRODUCING = "application/json";
 
     private final ArticleRepository articleRepository;
 
@@ -41,34 +44,35 @@ public class ArticleController {
         this.articleRepository = articleRepository;
     }
 
-    @GetMapping("/")
-    public List<ArticleEntryResponse> getAllArticles() {
+    @GetMapping(path = {"/"}, produces = {MIMETYPE_PRODUCING})
+    public Flux<ArticleEntryResponse> getAllArticles() {
         LOGGER.debug("access /list/ dispatched");
-        final List<ArticleEntity> entities = this.articleRepository.findAll();
-        return entities.stream() //
-            .map(this::convertToEntry) //
-            .collect(Collectors.toList());
+        return this.articleRepository.findAll() //
+            .map(this::convertToEntry);
     }
 
-    @GetMapping("/{article_id}/")
-    public ArticleResponse getArticle( //
+    @GetMapping(path = {"/{article_id}/"}, produces = {MIMETYPE_PRODUCING})
+    public Mono<ResponseEntity<ArticleResponse>> getArticle( //
         @PathVariable("article_id") final Long articleId //
     ) throws ArticleNotFoundException {
         LOGGER.debug("access /{articleId}/ dispatched", articleId);
-        final Optional<ArticleEntity> entity = this.articleRepository.findById(articleId);
-        if (entity.isEmpty()) {
-            throw new ArticleNotFoundException("requested article (id: " + articleId + ") not found.");
-        }
-        return this.convertToArticle(entity.get());
+        return this.articleRepository.findById(articleId) //
+            .map(this::convertToArticle) //
+            .map(ResponseEntity.ok()::body) //
+            .switchIfEmpty(Mono.error(() -> new ArticleNotFoundException("requested article (id: " + articleId + ") not found.")));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ArticleResponse> createArticle(@RequestBody @NonNull final ArticleCreationRequest creationRequest) {
-        final ArticleDraft articleDraft = this.convertToDraft(creationRequest);
-        final ArticleEntity article = this.articleRepository.save(articleDraft);
-        final String createdUrl = "/articles/" + article.getId() + "/";
-        return ResponseEntity.created(URI.create(createdUrl)) //
-            .body(this.convertToArticle(article));
+    @PostMapping(path = {"/"}, consumes = {MIMETYPE_CONSUMING}, produces = {MIMETYPE_PRODUCING})
+    public Mono<ResponseEntity<ArticleResponse>> createArticle(@RequestBody Mono<ArticleCreationRequest> creationRequest) {
+        final Mono<ArticleEntity> articleDraft = creationRequest.map(this::convertToDraft);
+        final Mono<ArticleEntity> article = this.articleRepository.saveAll(articleDraft) //
+            .next();
+        //final String createdUrl = "/articles/" + article.getId() + "/";
+        return article.map(entity -> {
+            final String createdURL = "/articles/" + entity.getId() + "/";
+            return ResponseEntity.created(URI.create(createdURL)) //
+                .body(this.convertToArticle(entity));
+        });
     }
 
     @ExceptionHandler
@@ -85,15 +89,6 @@ public class ArticleController {
             .build();
     }
 
-    // TODO remove
-    // private ArticleResponse convertToArticle(final ArticleDraft draft) {
-    //     return ArticleResponse.builder() //
-    //         .title(draft.getTitle()) //
-    //         .author(draft.getAuthor()) //
-    //         .body(draft.getBody()) //
-    //         .build();
-    // }
-
     private ArticleEntryResponse convertToEntry(final ArticleEntity entity) {
         return ArticleEntryResponse.builder() //
             .title(entity.getTitle()) //
@@ -101,9 +96,11 @@ public class ArticleController {
             .build();
     }
 
-    private ArticleDraft convertToDraft(@NonNull final ArticleCreationRequest creationRequest) {
-        return new ArticleDraft( //
-            creationRequest.getTitle() //
+    private ArticleEntity convertToDraft(@NonNull final ArticleCreationRequest creationRequest) {
+        return new ArticleEntity( //
+            // Draft has no ID persisted
+            null //
+            , creationRequest.getTitle() //
             , creationRequest.getAuthor() //
             , creationRequest.getBody());
     }

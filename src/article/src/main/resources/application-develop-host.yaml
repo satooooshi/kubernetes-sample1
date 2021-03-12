@@ -2,9 +2,8 @@ spring:
   profiles:
     include:
       - base
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5431/article
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5431/article
     username: postgres
     password: postgres
 accesscount:
