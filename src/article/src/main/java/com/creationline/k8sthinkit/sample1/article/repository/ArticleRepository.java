@@ -1,7 +1,6 @@
 package com.creationline.k8sthinkit.sample1.article.repository;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +36,9 @@ public class ArticleRepository {
 
     @Autowired
     public ArticleRepository(
-        final NamedParameterJdbcTemplate jdbcTeplate
+        final NamedParameterJdbcTemplate jdbcTemplate
     ) {
-        this.jdbcTemplate = jdbcTeplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional

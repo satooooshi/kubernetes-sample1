@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
-
 import com.creationline.k8sthinkit.sample1.article.controller.request.ArticleCreationRequest;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEntryResponse;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleNotFoundResponse;
@@ -31,7 +27,7 @@ import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleDraf
 import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleEntity;
 
 @RestController()
-@RequestMapping("/")
+@RequestMapping("/articles")
 public class ArticleController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
@@ -45,7 +41,7 @@ public class ArticleController {
         this.articleRepository = articleRepository;
     }
 
-    @GetMapping("list/")
+    @GetMapping("/")
     public List<ArticleEntryResponse> getAllArticles() {
         LOGGER.debug("access /list/ dispatched");
         final List<ArticleEntity> entities = this.articleRepository.findAll();
@@ -54,7 +50,7 @@ public class ArticleController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("{article_id}/")
+    @GetMapping("/{article_id}/")
     public ArticleResponse getArticle( //
         @PathVariable("article_id") final Long articleId //
     ) throws ArticleNotFoundException {
@@ -66,11 +62,11 @@ public class ArticleController {
         return this.convertToArticle(entity.get());
     }
 
-    @PostMapping
-    public ResponseEntity<ArticleResponse> createArticle(@NonNull final HttpServletRequest request, @RequestBody @NonNull final ArticleCreationRequest creationRequest) {
+    @PostMapping("/")
+    public ResponseEntity<ArticleResponse> createArticle(@RequestBody @NonNull final ArticleCreationRequest creationRequest) {
         final ArticleDraft articleDraft = this.convertToDraft(creationRequest);
         final ArticleEntity article = this.articleRepository.save(articleDraft);
-        final String createdUrl = request.getRequestURL().append(article.getId()).append("/").toString();
+        final String createdUrl = "/articles/" + article.getId() + "/";
         return ResponseEntity.created(URI.create(createdUrl)) //
             .body(this.convertToArticle(article));
     }
@@ -89,13 +85,14 @@ public class ArticleController {
             .build();
     }
 
-    private ArticleResponse convertToArticle(final ArticleDraft draft) {
-        return ArticleResponse.builder() //
-            .title(draft.getTitle()) //
-            .author(draft.getAuthor()) //
-            .body(draft.getBody()) //
-            .build();
-    }
+    // TODO remove
+    // private ArticleResponse convertToArticle(final ArticleDraft draft) {
+    //     return ArticleResponse.builder() //
+    //         .title(draft.getTitle()) //
+    //         .author(draft.getAuthor()) //
+    //         .body(draft.getBody()) //
+    //         .build();
+    // }
 
     private ArticleEntryResponse convertToEntry(final ArticleEntity entity) {
         return ArticleEntryResponse.builder() //
