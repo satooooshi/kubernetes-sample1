@@ -137,15 +137,13 @@ public class ArticleController {
     
     ) {
     
-        final Mono<Article> articleDraft = creationRequest.map(this::convertToDraft);
-        final Mono<Article> article = this.articleRepository.saveAll(articleDraft) //
-            // Flux(複数要素ストリーム)として返ってくるが、中身は1件なので最初の1件だけのMono(単一要素ストリーム)に変換しておく
-            .next();
-        return article.map(entity -> {
-            final String createdURL = "/articles/" + entity.getId() + "/";
-            return ResponseEntity.created(URI.create(createdURL)) //
-                .body(this.convertToArticle(entity));
-        });
+        return creationRequest.map(this::convertToDraft) //
+            .flatMap(this.articleRepository::save) //
+            .map(entity -> {
+                final String createdURL = "/articles/" + entity.getId() + "/";
+                return ResponseEntity.created(URI.create(createdURL)) //
+                    .body(this.convertToArticle(entity));
+            });
 
     }
 
