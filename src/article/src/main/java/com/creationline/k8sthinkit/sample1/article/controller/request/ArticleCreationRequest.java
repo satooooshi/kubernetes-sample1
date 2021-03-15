@@ -1,19 +1,19 @@
-package com.creationline.k8sthinkit.sample1.article.controller.response;
+package com.creationline.k8sthinkit.sample1.article.controller.request;
 
 import lombok.NonNull;
 import lombok.Value;
 
 /**
- * 記事内容
+ * 新規記事の作成のリクエストBody
  */
 @Value
 @NonNull
-public class ArticleResponse {
+public class ArticleCreationRequest {
 
     /** 記事タイトル */
     private final String title;
 
-    /** 著者 */
+    /** 著者名 */
     private final String author;
 
     /** 記事本文 */
