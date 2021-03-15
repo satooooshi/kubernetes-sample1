@@ -8,7 +8,7 @@ spring:
     password: postgres
 
 logging:
-  lavel:
+  level:
     com:
       creationline:
         k8sthinkit:
