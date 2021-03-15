@@ -24,85 +24,203 @@ import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEn
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleNotFoundResponse;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleResponse;
 import com.creationline.k8sthinkit.sample1.article.repository.ArticleRepository;
-import com.creationline.k8sthinkit.sample1.article.repository.entity.ArticleEntity;
+import com.creationline.k8sthinkit.sample1.article.repository.entity.Article;
 
-@RestController()
+/**
+ * 記事API
+ */
+@RestController
 @RequestMapping("/articles")
 public class ArticleController {
 
+    /** ログ出力 */
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
 
-    private static final String MIMETYPE_CONSUMING = "application/json";
-    private static final String MIMETYPE_PRODUCING = "application/json";
-
+    /** 記事の情報を永続化するコンポーネント */
     private final ArticleRepository articleRepository;
 
+    /**
+     * コンストラクターインジェクションによりDIコンテナから必要なコンポーネントを取得する
+     * 
+     * @param articleRepository
+     */
     @Autowired
     public ArticleController(
+
         final ArticleRepository articleRepository
+
     ) {
+
         this.articleRepository = articleRepository;
+
     }
 
-    @GetMapping(path = {"/"}, produces = {MIMETYPE_PRODUCING})
+
+    /**
+     * すべての記事の一覧を取得するAPI.
+     * {@code /articles/}への{@code GET}リクエストを処理する.
+     * 
+     * @return すべての記事の一覧
+     */
+    @GetMapping( //
+        path = { //
+            "/", //
+            "" //
+        }, //
+        produces = Controllers.MIMETYPE_PRODUCING // 応答するMIMETYPE
+    )
     public Flux<ArticleEntryResponse> getAllArticles() {
+
         LOGGER.debug("access /list/ dispatched");
+
+        // 永続化層 (ArticleRepository) の一覧メソッドでArticleをストリームとして取得し
+        // convertToEntry変換したストリームで応答する。
         return this.articleRepository.findAll() //
             .map(this::convertToEntry);
+
     }
 
-    @GetMapping(path = {"/{article_id}/"}, produces = {MIMETYPE_PRODUCING})
+
+    /**
+     * 個別の記事をID指定で取得するAPI.
+     * {@code /articles/{article_id}/}への{@code GET}リクエストを処理する.
+     * 
+     * @param articleId 取得する記事のID。パス変数 {@code article_id} の値を取得する.
+     * @return 該当するIDの記事内容.
+     * @throws ArticleNotFoundException 指定されたIDの記事が存在しない場合. ステータスコード404.
+     */
+    @GetMapping( //
+        path = { //
+            "/{article_id}/", //
+            "/{article_id}" //
+        }, //
+        produces = Controllers.MIMETYPE_PRODUCING // 応答するMIMETYPE
+    )
     public Mono<ResponseEntity<ArticleResponse>> getArticle( //
+
         @PathVariable("article_id") final Long articleId //
+    
     ) throws ArticleNotFoundException {
+
         LOGGER.debug("access /{articleId}/ dispatched", articleId);
+
+        // 永続化層 (ArticleRepository) の取得メソッドでArticleを取得し
+        // ArticleResponseへ変換とResponseEntityでの包み込みを行う。
         return this.articleRepository.findById(articleId) //
             .map(this::convertToArticle) //
             .map(ResponseEntity.ok()::body) //
+            // 指定されたIDが存在しないと空のレスポンスを正常ステータスで返してしまうので
+            // ArticleNotFoundExceptionを発生する例外ストリームに切り替える。
             .switchIfEmpty(Mono.error(() -> new ArticleNotFoundException("requested article (id: " + articleId + ") not found.")));
+
     }
 
-    @PostMapping(path = {"/"}, consumes = {MIMETYPE_CONSUMING}, produces = {MIMETYPE_PRODUCING})
-    public Mono<ResponseEntity<ArticleResponse>> createArticle(@RequestBody Mono<ArticleCreationRequest> creationRequest) {
-        final Mono<ArticleEntity> articleDraft = creationRequest.map(this::convertToDraft);
-        final Mono<ArticleEntity> article = this.articleRepository.saveAll(articleDraft) //
+
+    /**
+     * 記事の新規作成API.
+     * {@code /articles/}への{@code POST}リクエストを処理する.
+     * 
+     * @param creationRequest 作成する記事の内容
+     * @return 作成された記事とそれにアクセスするためのURL
+     */
+    @PostMapping( //
+        path = { //
+            "/", //
+            "" //
+        }, //
+        consumes = Controllers.MIMETYPE_CONSUMING, // 受け付けるMIMETYPE
+        produces = Controllers.MIMETYPE_PRODUCING // 応答するMIMETYPE
+    )
+    public Mono<ResponseEntity<ArticleResponse>> createArticle(
+        
+        @RequestBody Mono<ArticleCreationRequest> creationRequest
+    
+    ) {
+    
+        final Mono<Article> articleDraft = creationRequest.map(this::convertToDraft);
+        final Mono<Article> article = this.articleRepository.saveAll(articleDraft) //
+            // Flux(複数要素ストリーム)として返ってくるが、中身は1件なので最初の1件だけのMono(単一要素ストリーム)に変換しておく
             .next();
-        //final String createdUrl = "/articles/" + article.getId() + "/";
         return article.map(entity -> {
             final String createdURL = "/articles/" + entity.getId() + "/";
             return ResponseEntity.created(URI.create(createdURL)) //
                 .body(this.convertToArticle(entity));
         });
+
     }
 
+
+    /**
+     * 指定された記事が見つからなかったときの例外ハンドラ.
+     * HTTPステータス404で応答する.
+     * 
+     * @param exception 例外
+     * @return 例外応答
+     */
     @ExceptionHandler
-    public ResponseEntity<ArticleNotFoundResponse> handleArticleNotFound(@NonNull final ArticleNotFoundException exception) {
+    public ResponseEntity<ArticleNotFoundResponse> handleArticleNotFound(
+        
+        @NonNull final ArticleNotFoundException exception
+    
+    ) {
+
+        // 例外メッセージをbodyに設定して応答する
         return ResponseEntity.status(HttpStatus.NOT_FOUND) //
             .body(new ArticleNotFoundResponse(exception.getMessage()));
+
     }
 
-    private ArticleResponse convertToArticle(final ArticleEntity entity) {
-        return ArticleResponse.builder() //
-            .title(entity.getTitle()) //
-            .author(entity.getAuthor()) //
-            .body(entity.getBody()) //
-            .build();
+
+    /**
+     * 永続化エンティティ{@code Article}をレスポンスBodyとなる{@code ArticleResponse}に変換する.
+     * 
+     * @param entity 変換する永続化エンティティ
+     * @return 変換したレスポンスBody
+     */
+    private ArticleResponse convertToArticle(@NonNull final Article entity) {
+
+        return new ArticleResponse( //
+            entity.getTitle(), //
+            entity.getAuthor(), //
+            entity.getBody() //
+        );
+
     }
 
-    private ArticleEntryResponse convertToEntry(final ArticleEntity entity) {
-        return ArticleEntryResponse.builder() //
-            .title(entity.getTitle()) //
-            .author(entity.getAuthor()) //
-            .build();
+
+    /**
+     * 永続化エンティティ{@code Article}を一覧要素となる{@code ArticleEntryResponse}に変換する.
+     * 
+     * @param entity 変換する永続化エンティティ
+     * @return 変換した一覧要素
+     */
+    private ArticleEntryResponse convertToEntry(@NonNull final Article entity) {
+
+        return new ArticleEntryResponse( //
+            entity.getId(), //
+            entity.getTitle(), //
+            entity.getAuthor() //
+        );
+
     }
 
-    private ArticleEntity convertToDraft(@NonNull final ArticleCreationRequest creationRequest) {
-        return new ArticleEntity( //
+
+    /**
+     * 新規記事の作成リクエスト本文を新しい永続化エンティティに変換します.
+     * 
+     * @param creationRequest 変換する記事作成リクエスト
+     * @return 新しい永続化エンティティ
+     */
+    private Article convertToDraft(@NonNull final ArticleCreationRequest creationRequest) {
+
+        return new Article( //
             // Draft has no ID persisted
-            null //
-            , creationRequest.getTitle() //
-            , creationRequest.getAuthor() //
-            , creationRequest.getBody());
+            null, //
+            creationRequest.getTitle(), //
+            creationRequest.getAuthor(), //
+            creationRequest.getBody() //
+        );
+
     }
 
 }
