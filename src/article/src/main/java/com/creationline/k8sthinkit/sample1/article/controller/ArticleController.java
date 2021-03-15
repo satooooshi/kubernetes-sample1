@@ -102,7 +102,7 @@ public class ArticleController {
     
     ) throws ArticleNotFoundException {
 
-        LOGGER.debug("access /{articleId}/ dispatched", articleId);
+        LOGGER.debug("access /{}/ dispatched", articleId);
 
         // 永続化層 (ArticleRepository) の取得メソッドでArticleを取得し
         // ArticleResponseへ変換とResponseEntityでの包み込みを行う。
