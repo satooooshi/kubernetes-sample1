@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    include:
+      - base
+  r2dbc:
+    url: r2dbc:postgresql://accesscountdb:5432/accesscount
+    username: ${database.username}
+    password: ${database.password}
+# following credentials need override by environment variables
+database:
+  username: ''  # DATABASE_USERNAME
+  password: ''  # DATABASE_PASSWORD

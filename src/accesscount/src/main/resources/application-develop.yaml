@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    include:
+      - base
+  r2dbc:
+    url: r2dbc:postgresql://accesscountdb:5432/accesscount
+    username: postgres
+    password: postgres
+
+logging:
+  level:
+    com:
+      creationline:
+        k8sthinkit:
+          sample1: DEBUG
