@@ -1,16 +1,19 @@
 package com.creationline.k8sthinkit.sample1.accesscount.controller;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import com.creationline.k8sthinkit.sample1.accesscount.controller.request.AccessRecordRequest;
 import com.creationline.k8sthinkit.sample1.accesscount.controller.response.AccessStatsResponse;
+import com.creationline.k8sthinkit.sample1.accesscount.repository.AccesscountRepository;
+import com.creationline.k8sthinkit.sample1.accesscount.repository.entity.Accesscount;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,34 +32,35 @@ public class AccesscountController {
 
     /** ログ出力 */
     private static final Logger LOGGER = LoggerFactory.getLogger(AccesscountController.class);
-
-    public AccesscountController() {
-
+    private final AccesscountRepository accesscountRepository;
+    @Autowired
+    public AccesscountController(
+        @NonNull final AccesscountRepository accesscountRepository //
+    ) {
+        this.accesscountRepository = accesscountRepository;
     }
 
     /**
      * 1回のアクセスを記録するAPI
      */
     @PostMapping( //
-            path = { "/", //
-                    "" //
-            }, //
-            consumes = Controllers.MIMETYPE_CONSUMING //
+        path = {
+            "/", //
+            "" //
+        }, //
+        consumes = Controllers.MIMETYPE_CONSUMING //
     )
     public Mono<ResponseEntity<?>> recordAccess(
 
-            @RequestBody final Mono<AccessRecordRequest> accessRecord //
+        @RequestBody final Mono<AccessRecordRequest> accessRecord //
 
     ) {
 
         LOGGER.debug("access POST /accesscounts/ dispatched");
 
-        // TODO: persist access
-
-        return Mono.just( //
-                ResponseEntity.ok() //
-                        .build() //
-        );
+        return accessRecord.map(this::convertAccessRecordToAccesscountDraft) //
+            .flatMap(this.accesscountRepository::save) //
+            .map((__) -> ResponseEntity.noContent().build());
 
     }
 
@@ -71,26 +75,28 @@ public class AccesscountController {
      * @param to        集計する期間の終了日時. 指定された時刻は含まれない.
      */
     @GetMapping( //
-            path = { //
-                    "/stats/", //
-                    "/stats" //
-            }, //
-            params = { "article", //
-                    "from", //
-                    "to" } //
+        path = { //
+            "/stats/", //
+            "/stats" //
+        }, //
+        params = { //
+            "article", //
+            "from", //
+            "to" //
+        } //
     )
     public Mono<ResponseEntity<AccessStatsResponse>> stats( //
 
-            @RequestParam("article") //
-            final Long articleId, //
+        @RequestParam("article") //
+        final Long articleId, //
+ 
+        @RequestParam("from") //
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //
+        final OffsetDateTime from, //
 
-            @RequestParam("from") //
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final OffsetDateTime from, //
-
-            @RequestParam("to") //
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final OffsetDateTime to //
+        @RequestParam("to") //
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //
+        final OffsetDateTime to //
 
     ) {
 
@@ -101,15 +107,25 @@ public class AccesscountController {
 
         // TODO: get actual statistics
         return Mono.just( //
-                ResponseEntity.ok( //
-                        new AccessStatsResponse( //
-                                1L, //
-                                10L, //
-                                3L, //
-                                OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")), //
-                                OffsetDateTime.of(2021, 2, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")) //
-                        )));
+            ResponseEntity.ok( //
+                new AccessStatsResponse( //
+                    1L, //
+                    10L, //
+                    3L, //
+                    OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")), //
+                    OffsetDateTime.of(2021, 2, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")) //
+                )));
 
+    }
+
+    private Accesscount convertAccessRecordToAccesscountDraft(@NonNull final AccessRecordRequest accessRecord) {
+        return new Accesscount(
+            // Draft has no ID persisted
+            null, //
+            accessRecord.getArticleId(), //
+            accessRecord.getUid(), //
+            accessRecord.getAccessAt() //
+        );
     }
 
 }
