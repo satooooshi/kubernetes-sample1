@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    include:
+      - base
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/accesscount
+    username: postgres
+    password: postgres
+accesscount:
+  hostname: localhost
+  port: 8082

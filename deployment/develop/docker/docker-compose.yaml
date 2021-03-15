@@ -15,13 +15,18 @@ services:
     ports:
       - '127.0.0.1:5431:5432'  # postgres access from host
 
-#  accesscountdb:
-#    image: postgres:13-alpine
-#    environment:
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: accesscount
-#    ports:
-#      - '127.0.0.1:5432:5432'  # postgres access from host
+  accesscountdb:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: accesscount
+    volumes:
+      - type: bind
+        source: ../../../src/accesscount/database/schema.sql
+        target: /docker-entrypoint-initdb.d/schema.sql
+        read_only: true
+    ports:
+      - '127.0.0.1:5432:5432'  # postgres access from host
 
   article:
     depends_on:
@@ -39,18 +44,18 @@ services:
       - '127.0.0.1:8081:8080'  # web
       - '127.0.0.1:8001:8000'  # debugger
 
-#  accesscount:
-#    depends_on:
-#      - accesscountdb
-#    image: accesscount:dev-docker
-#    environment:
-#      DEBUG: 'false'
-#      ENABLE_DEBUGGER: 'false'
-#      DEBUGGER_PORT: '8000'
-#    volumes:
-#      - type: bind
-#        source: ../../../src/accesscount/
-#        target: /accesscount/
-#    ports:
-#      - '127.0.0.1:8082:8080'  # web
-#      - '127.0.0.1:8002:8000'  # debugger
+  accesscount:
+    depends_on:
+      - accesscountdb
+    image: accesscount:dev-docker
+    environment:
+      DEBUG: 'false'
+      ENABLE_DEBUGGER: 'false'
+      DEBUGGER_PORT: '8000'
+    volumes:
+      - type: bind
+        source: ../../../src/accesscount/
+        target: /accesscount/
+    ports:
+      - '127.0.0.1:8082:8080'  # web
+      - '127.0.0.1:8002:8000'  # debugger
