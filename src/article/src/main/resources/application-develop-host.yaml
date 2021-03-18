@@ -7,5 +7,4 @@ spring:
     username: postgres
     password: postgres
 accesscount:
-  hostname: localhost
-  port: 8082
+  url: http://localhost:8082

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -98,7 +99,8 @@ public class ArticleController {
     )
     public Mono<ResponseEntity<ArticleResponse>> getArticle( //
 
-        @PathVariable("article_id") final Long articleId //
+        @PathVariable("article_id") final Long articleId, //
+        @RequestHeader("X-UID") final String uid //
     
     ) throws ArticleNotFoundException {
 
