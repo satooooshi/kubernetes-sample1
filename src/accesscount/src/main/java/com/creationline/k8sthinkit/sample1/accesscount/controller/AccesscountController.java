@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -113,8 +114,8 @@ public class AccesscountController {
          * 最後にアクセス数を計算する. 述べアクセス数はList.size()で計算され,
          * Listの要素はユーザを識別する文字列なのでList全体をSetへ変換してsize()メソッドを呼ぶことでユニークアクセス数が計算される.
          */
-        return this.accesscountRepository.findByArticleIdAndAccessAtInTerm(articleId, from, to) //
-            .map(Accesscount::getUid) //
+        final Flux<Accesscount> rawRecords = this.accesscountRepository.findByArticleIdAndAccessAtInTerm(articleId, from, to); //
+        return rawRecords.map(Accesscount::getUid) //
             .collectList() //
             .map(uids -> ResponseEntity.ok( //
                 new AccessStatsResponse( //
@@ -130,7 +131,6 @@ public class AccesscountController {
 
     private Accesscount convertAccessRecordToAccesscountDraft(@NonNull final AccessRecordRequest accessRecord) {
         return new Accesscount(
-            // Draft has no ID persisted
             null, //
             accessRecord.getArticleId(), //
             accessRecord.getUid(), //

@@ -15,12 +15,17 @@ import reactor.core.publisher.Flux;
 public interface AccesscountRepository extends ReactiveSortingRepository<Accesscount, Long> {
 
     @NonNull
-    @Query(value = "SELECT a " + //
+    @Query(value = //
+        "SELECT " + //
+            "a.id AS id, " + //
+            "a.article_id AS article_id, " + //
+            "a.uid AS uid, " + //
+            "a.access_at AS access_at " + //
         "FROM Accesscount a " + //
         "WHERE " + //
-            "a.articleId = :articleId " + //
-            "AND :fromIncluding <= a.accessAt " + //
-            "AND a.accessAt < :toExcluding" //
+            "a.article_id = :articleId " + //
+            "AND :fromIncluding <= a.access_at " + //
+            "AND a.access_at < :toExcluding" //
     )
     Flux<Accesscount> findByArticleIdAndAccessAtInTerm( //
         @NonNull Long articleId, //
