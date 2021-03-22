@@ -1,7 +1,7 @@
 package com.creationline.k8sthinkit.sample1.accesscount.controller;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.util.Set;
 
 import com.creationline.k8sthinkit.sample1.accesscount.controller.request.AccessRecordRequest;
 import com.creationline.k8sthinkit.sample1.accesscount.controller.response.AccessStatsResponse;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -105,22 +106,31 @@ public class AccesscountController {
         LOGGER.debug("  arguments: from   : {}", from);
         LOGGER.debug("  arguments: to     : {}", to);
 
-        // TODO: get actual statistics
-        return Mono.just( //
-            ResponseEntity.ok( //
+        /*
+         * 延べアクセス数とユニークアクセス数を計算する.
+         * クエリメソッドからの戻り値は単一の記事IDのアクセスのみなので異なる記事へのアクセスレコードは含まれない.
+         * アクセス記録のUIDだけを抽出する. この時重複排除(distinct()メソッドなど)を行わない.
+         * 結果をcollectList()メソッドで重複を保ったままListに格納する.
+         * 最後にアクセス数を計算する. 述べアクセス数はList.size()で計算され,
+         * Listの要素はユーザを識別する文字列なのでList全体をSetへ変換してsize()メソッドを呼ぶことでユニークアクセス数が計算される.
+         */
+        final Flux<Accesscount> rawRecords = this.accesscountRepository.findByArticleIdAndAccessAtInTerm(articleId, from, to); //
+        return rawRecords.map(Accesscount::getUid) //
+            .collectList() //
+            .map(uids -> ResponseEntity.ok( //
                 new AccessStatsResponse( //
-                    1L, //
-                    10L, //
-                    3L, //
-                    OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")), //
-                    OffsetDateTime.of(2021, 2, 1, 0, 0, 0, 0, ZoneOffset.of("+09:00")) //
-                )));
+                    articleId, //
+                    Long.valueOf(uids.size()), //
+                    Long.valueOf(Set.copyOf(uids).size()), //
+                    from, //
+                    to //
+                ) //
+            ));
 
     }
 
     private Accesscount convertAccessRecordToAccesscountDraft(@NonNull final AccessRecordRequest accessRecord) {
         return new Accesscount(
-            // Draft has no ID persisted
             null, //
             accessRecord.getArticleId(), //
             accessRecord.getUid(), //

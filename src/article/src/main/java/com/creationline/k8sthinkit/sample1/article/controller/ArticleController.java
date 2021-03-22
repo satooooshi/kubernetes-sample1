@@ -1,6 +1,17 @@
 package com.creationline.k8sthinkit.sample1.article.controller;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.OffsetDateTime;
+
+import com.creationline.k8sthinkit.sample1.article.controller.request.ArticleCreationRequest;
+import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEntryResponse;
+import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleNotFoundResponse;
+import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleResponse;
+import com.creationline.k8sthinkit.sample1.article.repository.ArticleRepository;
+import com.creationline.k8sthinkit.sample1.article.repository.entity.Article;
+import com.creationline.k8sthinkit.sample1.article.service.accesscount.AccesscountService;
+import com.creationline.k8sthinkit.sample1.article.service.accesscount.entity.Accesscount;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,18 +24,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import com.creationline.k8sthinkit.sample1.article.controller.request.ArticleCreationRequest;
-import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEntryResponse;
-import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleNotFoundResponse;
-import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleResponse;
-import com.creationline.k8sthinkit.sample1.article.repository.ArticleRepository;
-import com.creationline.k8sthinkit.sample1.article.repository.entity.Article;
 
 /**
  * 記事API
@@ -39,19 +44,27 @@ public class ArticleController {
     /** 記事の情報を永続化するコンポーネント */
     private final ArticleRepository articleRepository;
 
+    private final AccesscountService accesscountService;
+
+    private final Clock clock;
+
     /**
      * コンストラクターインジェクションによりDIコンテナから必要なコンポーネントを取得する
      * 
      * @param articleRepository
      */
     @Autowired
-    public ArticleController(
+    public ArticleController( //
 
-        final ArticleRepository articleRepository
+        final ArticleRepository articleRepository, //
+        final AccesscountService accesscountService, //
+        final Clock clock //
 
     ) {
 
         this.articleRepository = articleRepository;
+        this.accesscountService = accesscountService;
+        this.clock = clock;
 
     }
 
@@ -98,11 +111,22 @@ public class ArticleController {
     )
     public Mono<ResponseEntity<ArticleResponse>> getArticle( //
 
-        @PathVariable("article_id") final Long articleId //
+        @PathVariable("article_id") final Long articleId, //
+        @RequestHeader("X-UID") final String uid //
     
     ) throws ArticleNotFoundException {
 
         LOGGER.debug("access /{}/ dispatched", articleId);
+
+        this.accesscountService.save(new Accesscount( //
+            articleId, //
+            uid, //
+            OffsetDateTime.now(this.clock) //
+        )) //
+        .doOnError((error) -> {
+            LOGGER.error("access notification to accesscount failed.", error);
+        })
+        .subscribe();
 
         // 永続化層 (ArticleRepository) の取得メソッドでArticleを取得し
         // ArticleResponseへ変換とResponseEntityでの包み込みを行う。

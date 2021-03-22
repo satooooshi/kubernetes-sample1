@@ -11,5 +11,4 @@ database:
   username: ''  # DATABASE_USERNAME
   password: ''  # DATABASE_PASSWORD
 accesscount:
-  hostname: accesscount
-  port: 8080
+  url: http://accesscount:8080

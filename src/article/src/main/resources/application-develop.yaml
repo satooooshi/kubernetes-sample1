@@ -15,5 +15,4 @@ logging:
           sample1: DEBUG
 
 accesscount:
-  hostname: accesscount
-  port: 8080
+  url: http://accesscount:8080
