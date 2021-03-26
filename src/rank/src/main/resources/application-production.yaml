@@ -1,0 +1,11 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://rankdb:5432/rank
+    username: ${database.username}
+    password: ${database.password}
+# following credentials need override by environment variables
+database:
+  username: ''  # DATABASE_USERNAME
+  password: ''  # DATABASE_PASSWORD
+accesscount:
+  url: http://accesscount:8080

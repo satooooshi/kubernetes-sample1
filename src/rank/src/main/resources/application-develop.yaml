@@ -1,0 +1,15 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://rankdb:5432/rank
+    username: postgres
+    password: postgres
+
+logging:
+  level:
+    com:
+      creationline:
+        k8sthinkit:
+          sample1: TRACE
+
+accesscount:
+  url: http://accesscount:8080
