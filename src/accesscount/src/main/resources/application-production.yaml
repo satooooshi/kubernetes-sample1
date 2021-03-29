@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    include:
-      - base
   r2dbc:
     url: r2dbc:postgresql://accesscountdb:5432/accesscount
     username: ${database.username}

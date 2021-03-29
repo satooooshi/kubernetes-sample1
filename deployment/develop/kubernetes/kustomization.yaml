@@ -2,4 +2,26 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- article.yaml
+- deployment-article.yaml
+- service-article.yaml
+- statefulset-articledb.yaml
+- service-articledb.yaml
+- deployment-accesscount.yaml
+- service-accesscount.yaml
+- statefulset-accesscountdb.yaml
+- service-accesscountdb.yaml
+- deployment-rank.yaml
+- service-rank.yaml
+- statefulset-rankdb.yaml
+- service-rankdb.yaml
+
+configMapGenerator:
+- name: article-init-db
+  files:
+  - config/articledb/schema.sql
+- name: accesscount-init-db
+  files:
+  - config/accesscountdb/schema.sql
+- name: rank-init-db
+  files:
+  - config/rankdb/schema.sql

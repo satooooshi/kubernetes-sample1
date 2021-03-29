@@ -13,7 +13,6 @@ spec:
     metadata:
       labels:
         app: article
-      name: article
     spec:
       containers:
       - name: article
@@ -39,19 +38,3 @@ spec:
         - name: debugger
           containerPort: 8000
           protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: article
-  name: article
-spec:
-  type: ClusterIP
-  selector:
-    app: article
-  ports:
-  - name: web
-    port: 8080
-    targetPort: 8080
-  # don't expose debugger port

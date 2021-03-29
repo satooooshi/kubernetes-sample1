@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    include:
-      - base
   r2dbc:
     url: r2dbc:postgresql://articledb:5432/article
     username: ${database.username}
