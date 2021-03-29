@@ -21,8 +21,10 @@ public class ArticleService {
     private final WebClient client;
 
     public ArticleService(
-        @NonNull final ArticleConfiguration articleConfig, //
-        @NonNull final WebClient.Builder webClientBuilder //
+        @NonNull //
+        final ArticleConfiguration articleConfig, //
+        @NonNull //
+        final WebClient.Builder webClientBuilder //
     ) {
         this.client = webClientBuilder.baseUrl(articleConfig.getUrl()) //
             .build();

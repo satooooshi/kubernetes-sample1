@@ -37,9 +37,12 @@ public class AccesscountService {
     @Autowired
     public AccesscountService(
 
-        @NonNull final DateTimeUtil dateTimeUtil, //
-        @NonNull final AccesscountConfiguration accesscountConfig, //
-        @NonNull final WebClient.Builder webClientBuilder
+        @NonNull //
+        final DateTimeUtil dateTimeUtil, //
+        @NonNull //
+        final AccesscountConfiguration accesscountConfig, //
+        @NonNull //
+        final WebClient.Builder webClientBuilder
 
     ) {
 

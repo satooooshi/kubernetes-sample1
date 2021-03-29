@@ -1,6 +1,5 @@
 package com.creationline.k8sthinkit.sample1.rank.controller;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -42,9 +41,12 @@ public class RankController {
     @Autowired
     public RankController( //
 
-        @NonNull final DailyTotalEntryRepository dailyTotalEntryRepository, //
-        @NonNull final DailyUniqueEntryRepository dailyUniqueEntryRepository, //
-        @NonNull final RankCalculationService rankCalculationService //
+        @NonNull //
+        final DailyTotalEntryRepository dailyTotalEntryRepository, //
+        @NonNull //
+        final DailyUniqueEntryRepository dailyUniqueEntryRepository, //
+        @NonNull //
+        final RankCalculationService rankCalculationService //
 
     ) {
 
@@ -110,6 +112,7 @@ public class RankController {
     )
     public Mono<ResponseEntity<?>> updateDailyRank( //
 
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) //
         @RequestParam("date") //
         final LocalDate date, //
         @NonNull //
@@ -122,17 +125,32 @@ public class RankController {
         final Flux<DailyTotalEntry> updatedTotalRanks = this.rankCalculationService.updateDailyTotalAccessRank(date);
         final Flux<DailyUniqueEntry> updatedUniqueRanks = this.rankCalculationService.updateDailyUniqueAccessRank(date);
 
-        Flux.zip(updatedTotalRanks, updatedUniqueRanks).blockLast();
-
-        LOGGER.debug("complete manual daily rank update for {}", date);
-
-        final URI createdURI = baseUri.queryParam("date", date) //
-            .build() //
-            .toUri();
-        return Mono.just( //
-            ResponseEntity.created(createdURI) //
+        return Mono.zip( //
+                updatedTotalRanks //
+                    // .checkpoint("update result of total access rank") //
+                    // .log("update result of total access rank") //
+                    .last(), //
+                updatedUniqueRanks //
+                    // .checkpoint("update result of total access rank") //
+                    // .log("update result of total access rank") //
+                    .last() //
+            ) //
+            // .checkpoint("after zip") //
+            // .log("after zip")
+            .doOnNext((__) -> {
+                LOGGER.debug("complete manual daily rank update for {}", date);
+            }) //
+            // .checkpoint("after complete log") //
+            // .log("after complete log") //
+            .map((__) -> baseUri.queryParam("date", date) //
                 .build() //
-        );
+                .toUri() //
+            ) //
+            // .checkpoint("after construct createURI") //
+            // .log("after construct createURI") //
+            .map(createdURI -> ResponseEntity.created(createdURI) //
+                .build() //
+            );
 
     }
 

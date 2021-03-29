@@ -15,11 +15,17 @@ public class DailyTotalEntryWriteConverter implements Converter<DailyTotalEntry,
     @NonNull
     public OutboundRow convert(@NonNull final DailyTotalEntry source) {
 
-        return new OutboundRow() //
-            .append("date", Parameter.from(source.getEntryId().getDate())) //
-            .append("rank", Parameter.from(source.getEntryId().getRank())) //
+        final OutboundRow outboundRow =  new OutboundRow() //
+            .append("date", Parameter.from(source.getDate())) //
+            .append("rank", Parameter.from(source.getRank())) //
             .append("article_id", Parameter.from(source.getArticleId())) //
             .append("total_access", Parameter.from(source.getTotalAccess()));
+        
+        if (source.getId() != null) {
+            outboundRow.append("id", Parameter.from(source.getId()));
+        }
+
+        return outboundRow;
 
     }
     

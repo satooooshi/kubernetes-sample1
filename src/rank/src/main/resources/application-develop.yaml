@@ -13,3 +13,5 @@ logging:
 
 accesscount:
   url: http://accesscount:8080
+article:
+  url: http://article:8080

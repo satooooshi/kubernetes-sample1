@@ -20,7 +20,7 @@ public class RankUpdateSchedulerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RankUpdateSchedulerService.class);
 
-    private static final String DAILY_UPDATE_SCHEDULE_CRON = "0 0 0 */1 * *";
+    private static final String DAILY_UPDATE_SCHEDULE_CRON = "0 0 0 * * *";
 
     @NonNull
     private final RankCalculationService rankCalculationService;
@@ -36,7 +36,7 @@ public class RankUpdateSchedulerService {
         this.rankCalculationService = rankCalculationService;
     }
 
-    @Scheduled(cron = DAILY_UPDATE_SCHEDULE_CRON)
+    @Scheduled(cron = DAILY_UPDATE_SCHEDULE_CRON, zone = "${timezone:}")
     public void dailyUpdate() {
 
         final LocalDate today = LocalDate.now();

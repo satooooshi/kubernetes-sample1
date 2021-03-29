@@ -5,3 +5,5 @@ spring:
     password: postgres
 accesscount:
   url: http://localhost:8082
+article:
+  url: http://localhost:8081

@@ -15,11 +15,17 @@ public class DailyUniqueEntryWriteConverter implements Converter<DailyUniqueEntr
     @NonNull
     public OutboundRow convert(@NonNull final DailyUniqueEntry source) {
 
-        return new OutboundRow() //
-            .append("date", Parameter.from(source.getEntryId().getDate())) //
-            .append("rank", Parameter.from(source.getEntryId().getRank())) //
+        final OutboundRow outboundRow = new OutboundRow() //
+            .append("date", Parameter.from(source.getDate())) //
+            .append("rank", Parameter.from(source.getRank())) //
             .append("article_id", Parameter.from(source.getArticleId())) //
             .append("unique_access", Parameter.from(source.getUniqueAccess()));
+
+        if (source.getId() != null) {
+            outboundRow.append("id", Parameter.from(source.getId()));
+        }
+
+        return outboundRow;
 
     }
     

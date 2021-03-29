@@ -3,3 +3,7 @@ spring:
     url: r2dbc:h2:mem:///rank
     username: username
     password: password
+accesscount:
+  url: http://accesscount:8080
+article:
+  url: http://article:8080
