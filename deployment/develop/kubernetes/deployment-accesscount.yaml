@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: accesscount
+  name: accesscount
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accesscount
+  template:
+    metadata:
+      labels:
+        app: accesscount
+    spec:
+      containers:
+      - name: accesscount
+        image: accesscount:dev
+        env:
+        - name: DEBUG
+          value: 'false'
+        - name: ENABLE_DEBUGGER
+          value: 'false'
+        - name: DEBUGGER_PORT
+          value: '8000'
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        ports:
+        - name: web
+          containerPort: 8080
+          protocol: TCP
+        - name: debugger
+          containerPort: 8000
+          protocol: TCP

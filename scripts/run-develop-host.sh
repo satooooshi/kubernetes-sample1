@@ -26,7 +26,7 @@ export arguments
 export ENABLE_DEBUGGER="${ENABLE_DEBUGGER:-false}"
 export DEBUGGER_PORT="${DEBUGGER_PORT:-8000}"
 if "${ENABLE_DEBUGGER}"; then
-  debugger_args="-Dspring-boot.run.jvmArguments='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=${DEBUGGER_PORT}'"
+  debugger_args="-Dspring-boot.run.jvmArguments=-Xdebug\\ -Xrunjdwp:transport=dt_socket,server=y,address=${DEBUGGER_PORT}"
 else
   debugger_args=''
 fi
@@ -34,4 +34,4 @@ export debugger_args
 
 export SPRING_PROFILES_ACTIVE=develop-host
 cd "./src/${component}"
-mvn ${arguments} ${debugger_args} spring-boot:run
+mvn ${arguments} spring-boot:run ${debugger_args}
