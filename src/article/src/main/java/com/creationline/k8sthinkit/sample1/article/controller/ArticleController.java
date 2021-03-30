@@ -3,6 +3,7 @@ package com.creationline.k8sthinkit.sample1.article.controller;
 import java.net.URI;
 import java.time.Clock;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import com.creationline.k8sthinkit.sample1.article.controller.request.ArticleCreationRequest;
 import com.creationline.k8sthinkit.sample1.article.controller.response.ArticleEntryResponse;
@@ -84,7 +85,7 @@ public class ArticleController {
     )
     public Flux<ArticleEntryResponse> getAllArticles() {
 
-        LOGGER.debug("access /list/ dispatched");
+        LOGGER.debug("access / dispatched");
 
         // 永続化層 (ArticleRepository) の一覧メソッドでArticleをストリームとして取得し
         // convertToEntry変換したストリームで応答する。
@@ -111,22 +112,32 @@ public class ArticleController {
     )
     public Mono<ResponseEntity<ArticleResponse>> getArticle( //
 
-        @PathVariable("article_id") final Long articleId, //
-        @RequestHeader("X-UID") final String uid //
+        @PathVariable("article_id") //
+        @NonNull
+        final Long articleId, //
+
+        @RequestHeader( //
+            name = "X-UID", //
+            required = false //
+        ) //
+        @NonNull
+        final Optional<String> uid //
     
     ) throws ArticleNotFoundException {
 
         LOGGER.debug("access /{}/ dispatched", articleId);
 
-        this.accesscountService.save(new Accesscount( //
-            articleId, //
-            uid, //
-            OffsetDateTime.now(this.clock) //
-        )) //
-        .doOnError((error) -> {
-            LOGGER.error("access notification to accesscount failed.", error);
-        })
-        .subscribe();
+        if (uid.isPresent()) {
+            this.accesscountService.save(new Accesscount( //
+                articleId, //
+                uid.get(), //
+                OffsetDateTime.now(this.clock) //
+            )) //
+            .doOnError((error) -> {
+                LOGGER.error("access notification to accesscount failed.", error);
+            })
+            .subscribe();
+        }
 
         // 永続化層 (ArticleRepository) の取得メソッドでArticleを取得し
         // ArticleResponseへ変換とResponseEntityでの包み込みを行う。
