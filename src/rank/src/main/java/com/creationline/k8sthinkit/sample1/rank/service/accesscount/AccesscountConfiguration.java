@@ -5,11 +5,15 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
+/**
+ * Accesscountサービスの設定値を読み込むクラス
+ */
 @Component
 @ConfigurationProperties("accesscount")
 @Data
 public class AccesscountConfiguration {
 
+    /** 接続先URL */
     private String url;
 
 }

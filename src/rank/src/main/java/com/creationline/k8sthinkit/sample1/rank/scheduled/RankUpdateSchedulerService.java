@@ -1,5 +1,6 @@
 package com.creationline.k8sthinkit.sample1.rank.scheduled;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 import com.creationline.k8sthinkit.sample1.rank.repository.entity.DailyTotalEntry;
@@ -15,31 +16,49 @@ import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Flux;
 
+/**
+ * 順位の定期更新サービス
+ */
 @Component
 public class RankUpdateSchedulerService {
 
+    /** ログ出力 */
     private static final Logger LOGGER = LoggerFactory.getLogger(RankUpdateSchedulerService.class);
 
-    private static final String DAILY_UPDATE_SCHEDULE_CRON = "0 0 0 * * *";
-
-    @NonNull
+    /** アクセスランキング更新サービス */
     private final RankCalculationService rankCalculationService;
 
+    /** システム時計 */
+    private final Clock systemClock;
+
+    /**
+     * コンストラクタインジェクションのためのコンストラクタ
+     * 
+     * @param rankCalculationService アクセスランキング更新サービス
+     */
     @Autowired
-    public RankUpdateSchedulerService(
+    public RankUpdateSchedulerService( //
 
         @NonNull //
-        final RankCalculationService rankCalculationService //
+        final RankCalculationService rankCalculationService, //
+
+        @NonNull //
+        final Clock systemClock //
 
     ) {
         
         this.rankCalculationService = rankCalculationService;
+        this.systemClock = systemClock;
+
     }
 
-    @Scheduled(cron = DAILY_UPDATE_SCHEDULE_CRON, zone = "${timezone:}")
+    /**
+     * 日次更新
+     */
+    @Scheduled(cron = "${rank.schedule.daily}", zone = "${timezone:}")
     public void dailyUpdate() {
 
-        final LocalDate today = LocalDate.now();
+        final LocalDate today = LocalDate.now(this.systemClock);
 
         LOGGER.debug("start scheduled daily rank update for {}", today);
 

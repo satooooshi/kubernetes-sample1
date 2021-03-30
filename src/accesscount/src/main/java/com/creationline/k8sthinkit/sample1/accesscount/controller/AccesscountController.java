@@ -33,16 +33,31 @@ public class AccesscountController {
 
     /** ログ出力 */
     private static final Logger LOGGER = LoggerFactory.getLogger(AccesscountController.class);
+
+    /** Accesscountエンティティを管理するRepositoryオブジェクト */
     private final AccesscountRepository accesscountRepository;
+
+    /**
+     * コンストラクタインジェクションのためのコンストラクタ
+     * 
+     * @param accesscountRepository Accesscountエンティティを管理するRepositoryクラス
+     */
     @Autowired
-    public AccesscountController(
-        @NonNull final AccesscountRepository accesscountRepository //
+    public AccesscountController( //
+
+        @NonNull //
+        final AccesscountRepository accesscountRepository //
+
     ) {
+
         this.accesscountRepository = accesscountRepository;
+
     }
 
     /**
      * 1回のアクセスを記録するAPI
+     * 
+     * @param accessRecord アクセス内容
      */
     @PostMapping( //
         path = {
@@ -51,9 +66,10 @@ public class AccesscountController {
         }, //
         consumes = Controllers.MIMETYPE_CONSUMING //
     )
-    public Mono<ResponseEntity<?>> recordAccess(
+    public Mono<ResponseEntity<?>> recordAccess( //
 
-        @RequestBody final Mono<AccessRecordRequest> accessRecord //
+        @RequestBody //
+        final Mono<AccessRecordRequest> accessRecord //
 
     ) {
 
@@ -102,9 +118,9 @@ public class AccesscountController {
     ) {
 
         LOGGER.debug("access GET /accesscounts/stats/ dispatched");
-        LOGGER.debug("  arguments: article: {}", articleId);
-        LOGGER.debug("  arguments: from   : {}", from);
-        LOGGER.debug("  arguments: to     : {}", to);
+        LOGGER.trace("  arguments: article: {}", articleId);
+        LOGGER.trace("  arguments: from   : {}", from);
+        LOGGER.trace("  arguments: to     : {}", to);
 
         /*
          * 延べアクセス数とユニークアクセス数を計算する.
@@ -129,6 +145,11 @@ public class AccesscountController {
 
     }
 
+    /**
+     * 受け取ったアクセス内容({@code AccesRecord}オブジェクト)を永続化するアクセスカウント({@code Accesscount}オブジェクト)に変換する
+     * 
+     * 新規エンティティなのでIDフィールドは{@code null}とする
+     */
     private Accesscount convertAccessRecordToAccesscountDraft(@NonNull final AccessRecordRequest accessRecord) {
         return new Accesscount(
             null, //

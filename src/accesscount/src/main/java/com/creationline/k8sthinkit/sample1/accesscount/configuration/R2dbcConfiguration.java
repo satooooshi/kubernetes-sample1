@@ -14,22 +14,47 @@ import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
+/**
+ * Spring Data R2DBCの設定クラス
+ * 
+ * R2DBCリポジトリで使用されるCustomConverterを登録するために独自実装を提供する
+ */
 @Configuration
 public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
 
+    /** プロパティ参照 spring.r2dbc.url */
     @NonNull
     private final String url;
 
+    /** プロパティ参照 spring.r2dbc.username */
     @NonNull
     private final String username;
 
+    /** プロパティ参照 spring.r2dbc.username */
     @NonNull
     private final String password;
 
+    /**
+     * コンストラクタインジェクションのためのコンストラクタ
+     * 
+     * @param url プロパティ参照 spring.r2dbc.url
+     * @param username プロパティ参照 spring.r2dbc.username
+     * @param password プロパティ参照 spring.r2dbc.password
+     */
     public R2dbcConfiguration( //
-        @NonNull @Value("${spring.r2dbc.url}") final String url, //
-        @NonNull @Value("${spring.r2dbc.username}") final String username, //
-        @NonNull @Value("${spring.r2dbc.password}") final String password //
+
+        @NonNull //
+        @Value("${spring.r2dbc.url}") //
+        final String url, //
+
+        @NonNull //
+        @Value("${spring.r2dbc.username}") //
+        final String username, //
+
+        @NonNull //
+        @Value("${spring.r2dbc.password}") //
+        final String password //
+
     ) {
 
         this.url = url;
@@ -38,6 +63,11 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
 
     }
 
+    /**
+     * ConnectionFactoryの作成
+     * 
+     * デフォルトのConnectionFactoryと同等にプロパティから読み込んだURL/user名/パスワードを設定している
+     */
     @Override
     public ConnectionFactory connectionFactory() {
 
@@ -52,6 +82,9 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
 
     }
 
+    /**
+     * エンティティをSQLクエリのためのオブジェクトへの変換(読み取り/書き込みの2通り)をするConverterを登録する
+     */
     @Override
     protected List<Object> getCustomConverters() {
 

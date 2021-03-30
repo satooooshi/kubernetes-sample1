@@ -92,7 +92,7 @@ graph TD
 
 ## Develop
 
-> Replace `${component}` to component name. For example: `article`, `accesscount`, or `rank`.
+> Replace `${component}` to component name: `article`, `accesscount`, or `rank`.
 
 ### Develop with docker (Recommended)
 
@@ -103,6 +103,8 @@ graph TD
   ```
 
   This script build and update container images named `${component}:dev-docker`
+
+  `dev-docker` container optimized only for development. The image runs application with `mvn spring-boot:run` command, so application runs with `devtools`. `devtools` enables "hot reload" that provide great experience for development. But you should not run it public environment.
 
 - Run container:
 
@@ -118,11 +120,40 @@ graph TD
 
 ### Develop with local Kubernetes
 
+Run with on-premise kubernetes (constructed by `kubeadm`), `kind`, `minikube`, and kubernetes bundled with docker-desktop.
 
+- Build container images for development
+
+  ```bash
+  ./scripts/build-develop.sh "${component}"
+  ```
+
+- Setup `kubectl` command to manipulate target kubernetes cluster:
+
+  ```text
+  $ kubectl cluster-info
+  Kubernetes control plane is running at <target kubernetes apiserver endpoint>
+  KubeDNS is running at <target kubernetes apiserver endpoint>/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+  To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+  ```
+
+- Run containers:
+
+  ```bash
+  kubectl apply -k ./deployment/develop/kubernetes/
+  ```
+
+- Access to service
+  - With `port-forward`:
+
+    ```bash
+    kubectl port-forward svc/${component} 
+    ```
 
 ### Develop without container
 
-> You can install these by [SDKMAN!](https://sdkman.io)
+> You can install these Java tools by [SDKMAN!](https://sdkman.io)
 >
 > ```bash
 > curl -s "https://get.sdkman.io" | bash
@@ -134,6 +165,7 @@ graph TD
   - use AdoptOpenJDK
 - Apache Maven 3.6.3
 - docker 20.10.2
+- docker-compose 1.28.5
 
 Before you start application, you can start backend database:
 

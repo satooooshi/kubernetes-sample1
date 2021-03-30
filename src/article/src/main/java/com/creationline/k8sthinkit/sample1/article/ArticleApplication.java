@@ -21,8 +21,11 @@ public class ArticleApplication {
 	 * @param args コマンド引数
 	 */
 	public static void main(@NonNull final String[] args) {
+
 		SpringApplication.run(ArticleApplication.class, args);
-		LOGGER.info("Article application started!");
+
+		LOGGER.debug("Article application started!");
+
 	}
 
 }

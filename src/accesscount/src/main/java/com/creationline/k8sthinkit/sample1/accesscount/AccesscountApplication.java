@@ -20,8 +20,11 @@ public class AccesscountApplication {
 	 * @param args コマンド引数
 	 */
 	public static void main(String[] args) {
+
 		SpringApplication.run(AccesscountApplication.class, args);
+
 		LOGGER.debug("Accesscount application started!");
+
 	}
 
 }
