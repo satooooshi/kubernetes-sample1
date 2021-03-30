@@ -55,7 +55,10 @@ public class RankUpdateSchedulerService {
     /**
      * 日次更新
      */
-    @Scheduled(cron = "${rank.schedule.daily}", zone = "${timezone:}")
+    @Scheduled( //
+        cron = "${rank.schedule.daily}", //
+        zone = "${timezone:}" //
+    )
     public void dailyUpdate() {
 
         final LocalDate today = LocalDate.now(this.systemClock);
