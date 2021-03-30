@@ -18,24 +18,42 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * アクセスランキングを集計するクラス
+ */
 @Component
 public class RankCalculationService {
 
+    /** アクセスカウントサービス */
     private final AccesscountService accesscountService;
+
+    /** 記事サービス */
     private final ArticleService articleService;
+
+    /** 日次延べアクセス順位を永続化するリポジトリ */
     private final DailyTotalEntryRepository dailyTotalEntryRepository;
+
+    /** 日次アクセスユーザ順位を永続化するリポジトリ */
     private final DailyUniqueEntryRepository dailyUniqueEntryRepository;
 
+    /**
+     * コンストラクタインジェクションのためのコンストラクタ
+     */
     @Autowired
     public RankCalculationService( //
+
         @NonNull //
         final AccesscountService accesscountService, //
+
         @NonNull //
         final ArticleService articleService, //
+
         @NonNull //
         final DailyTotalEntryRepository dailyTotalEntryRepository, //
+
         @NonNull //
         final DailyUniqueEntryRepository dailyUniqueEntryRepository //
+
     ) {
 
         this.accesscountService = accesscountService;
@@ -45,6 +63,12 @@ public class RankCalculationService {
 
     }
 
+    /**
+     * 日次アクセスユーザ順位を更新する
+     * 
+     * @param date 順位を更新する日付
+     * @return 更新された順位
+     */
     public Flux<DailyUniqueEntry> updateDailyUniqueAccessRank( //
 
         @NonNull //
@@ -80,6 +104,12 @@ public class RankCalculationService {
 
     }
 
+    /**
+     * 日次延べアクセス順位を更新する
+     * 
+     * @param date 順位を更新する日付
+     * @return 更新された順位
+     */
     public Flux<DailyTotalEntry> updateDailyTotalAccessRank( //
 
         @NonNull //

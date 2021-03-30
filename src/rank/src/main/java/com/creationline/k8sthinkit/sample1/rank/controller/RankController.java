@@ -28,23 +28,41 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * ランクAPI
+ */
 @RestController
 @RequestMapping("/ranks")
 public class RankController {
 
+    /** ログ出力 */
     private static final Logger LOGGER = LoggerFactory.getLogger(RankController.class);
 
+    /** DailyTotalEntryエンティティを管理するRepositoryオブジェクト */
     private final DailyTotalEntryRepository dailyTotalEntryRepository;
+
+    /** DailyUniqueEntryエンティティを管理するRepositoryオブジェクト */
     private final DailyUniqueEntryRepository dailyUniqueEntryRepository;
+
+    /** アクセスランキング集計サービス */
     private final RankCalculationService rankCalculationService;
 
+    /**
+     * コンストラクタインジェクションのためのコンストラクタ
+     * 
+     * @param dailyTotalEntryRepository DailyTotalEntryエンティティを管理するRepositoryオブジェクト
+     * @param dailyUniqueEntryRepository DailyUniqueEntryエンティティを管理するRepositoryオブジェクト
+     * @param rankCalculationService アクセスランキング集計サービス
+     */
     @Autowired
     public RankController( //
 
         @NonNull //
         final DailyTotalEntryRepository dailyTotalEntryRepository, //
+
         @NonNull //
         final DailyUniqueEntryRepository dailyUniqueEntryRepository, //
+
         @NonNull //
         final RankCalculationService rankCalculationService //
 
@@ -56,6 +74,12 @@ public class RankController {
 
     }
 
+    /**
+     * 日次ランキングの取得
+     * 
+     * @param date ランキングを取得する日付
+     * @return 
+     */
     @GetMapping( //
         path = { //
             "/daily/", //
@@ -101,12 +125,19 @@ public class RankController {
 
     }
 
+    /**
+     * 日次ランキングの更新
+     * 
+     * @param date 更新対象の日付
+     * @param baseUri このエンドポイントのパスを含むURL
+     * @return レスポンスボディなし(204)
+     */
     @PutMapping( //
         path = { //
             "/daily/", //
             "/daily" //
         }, //
-        params = {
+        params = { //
             "date", //
         } //
     )
@@ -154,18 +185,44 @@ public class RankController {
 
     }
 
-    private RankEntry dailyTotalEntryToRankEntry(@NonNull final DailyTotalEntry totalEntry) {
+    /**
+     * 日次延べアクセス順位エンティティを{@link RankEntry}に変換する
+     * 
+     * @param totalEntry 日次延べアクセス順位エンティティ
+     * @return {@link RankEntry}
+     */
+    private RankEntry dailyTotalEntryToRankEntry( //
+
+        @NonNull //
+        final DailyTotalEntry totalEntry //
+
+    ) {
+
         return new RankEntry( //
             totalEntry.getArticleId(), //
             totalEntry.getTotalAccess() //
         );
+
     }
 
-    private RankEntry dailyUniqueEntryToRankEntry(@NonNull final DailyUniqueEntry uniqueEntry) {
+    /**
+     * 日次アクセスユーザ順位エンティティを{@link RankEntry}に変換する
+     * 
+     * @param uniqueEntry 日次アクセスユーザ順位エンティティ
+     * @return {@link Rankentry}
+     */
+    private RankEntry dailyUniqueEntryToRankEntry( //
+
+        @NonNull //
+        final DailyUniqueEntry uniqueEntry //
+
+    ) {
+
         return new RankEntry( //
             uniqueEntry.getArticleId(), //
             uniqueEntry.getUniqueAccess() //
         );
+
     }
 
 }

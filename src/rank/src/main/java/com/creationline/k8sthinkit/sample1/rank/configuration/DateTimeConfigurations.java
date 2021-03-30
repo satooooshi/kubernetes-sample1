@@ -9,9 +9,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
+/**
+ * 日時設定クラス
+ */
 @Configuration
 public class DateTimeConfigurations {
 
+    /**
+     * アプリケーションが使うタイムゾーンを表すZoneIdをBeanとして登録する
+     * 
+     * @return {@link java.time.ZoneId}
+     */
     @Bean
     public ZoneId systemZone( //
         @Value("${timezone:}") //
@@ -26,6 +34,12 @@ public class DateTimeConfigurations {
 
     }
 
+    /**
+     * アプリケーションが使う{@link java.time.Clock}オブジェクトをBeanとして登録する
+     * 
+     * @param systemZone タイムゾーン
+     * @return {@link java.time.Clock}
+     */
     @Bean
     public Clock clock(
         @Autowired //
