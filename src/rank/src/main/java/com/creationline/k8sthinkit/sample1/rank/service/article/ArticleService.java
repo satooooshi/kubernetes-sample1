@@ -18,7 +18,7 @@ public class ArticleService {
 
     /** 記事一覧を取得するときのURIテンプレート */
     private static final String URI_TEMPLATE_FOR_LIST_ARTICLES = UriComponentsBuilder.newInstance() //
-        .pathSegment("articles") //
+        .pathSegment("api", "articles") //
         .build() //
         .toString();
 

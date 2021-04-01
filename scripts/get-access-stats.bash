@@ -15,4 +15,4 @@ if (( "$#" < 3 )); then
 __EOT__
 fi
 
-curl ${CURL_OPTS} "${ACCESSCOUNT_URL}/accesscounts/stats/?article=${1}&from=${2}T00:00:00%2B09:00&to=${3}T00:00:00%2B09:00"
+curl ${CURL_OPTS} "${ACCESSCOUNT_URL}/api/accesscounts/stats/?article=${1}&from=${2}T00:00:00%2B09:00&to=${3}T00:00:00%2B09:00"
