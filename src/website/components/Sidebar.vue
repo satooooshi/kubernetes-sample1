@@ -43,11 +43,9 @@ export default Vue.component('sidebar-outer', {
     const month = (yesterday.getMonth() + 1).toString().padStart(2, '0')
     const dayOfMonth = yesterday.getDate().toString().padStart(2, '0')
     const yesterdayISO8601 = `${year}-${month}-${dayOfMonth}`
-    console.log(`yesterdayISO8601: ${yesterdayISO8601}`)
 
-    const url = `http://localhost:8083/ranks/daily/?date=${yesterdayISO8601}`
+    const url = `http://localhost:8083/api/ranks/daily/?date=${yesterdayISO8601}`
     this.$data.dailyRanking = await this.$axios.$get(url)
-    console.log(`dailyRanking: ${JSON.stringify(this.$data.dailyRanking)}`)
 
   },
 

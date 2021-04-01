@@ -29,7 +29,7 @@ export default Vue.component('article-list', {
     }
   },
   async fetch() {
-    const articleList = await this.$axios.$get("http://localhost:8081/articles/")
+    const articleList = await this.$axios.$get("http://localhost:8081/api/articles/")
     for (const article of articleList) {
       this.$data.articles.push(article)
     }
