@@ -29,7 +29,7 @@ public class AccesscountService {
 
     /** アクセス統計を取得するためのURIテンプレート */
     private static final String URI_TEMPLATE_FOR_CALCULATE_STATS = UriComponentsBuilder.newInstance() //
-        .pathSegment("accesscounts", "stats") //
+        .pathSegment("api", "accesscounts", "stats") //
         .queryParam("article", "{articleId}") //
         .queryParam("from", "{from}") //
         .queryParam("to", "{to}") //

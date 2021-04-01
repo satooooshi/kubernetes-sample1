@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,8 @@ import reactor.core.publisher.Mono;
  * ランクAPI
  */
 @RestController
-@RequestMapping("/ranks")
+@RequestMapping("/api/ranks")
+@CrossOrigin
 public class RankController {
 
     /** ログ出力 */

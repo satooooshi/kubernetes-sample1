@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,8 @@ import reactor.core.publisher.Mono;
  * アクセスカウントAPI
  */
 @RestController
-@RequestMapping("/accesscounts")
+@RequestMapping("/api/accesscounts")
+@CrossOrigin
 public class AccesscountController {
 
     /** ログ出力 */

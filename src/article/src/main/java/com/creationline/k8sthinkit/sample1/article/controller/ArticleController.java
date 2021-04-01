@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,8 @@ import reactor.core.publisher.Mono;
  * 記事API
  */
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("/api/articles")
+@CrossOrigin
 public class ArticleController {
 
     /** ログ出力 */
@@ -127,7 +129,8 @@ public class ArticleController {
 
         LOGGER.debug("access /{}/ dispatched", articleId);
 
-        if (uid.isPresent()) {
+        // X-UIDヘッダの値が存在するときはaccesscountServiceにアクセスがあったことを通知する
+        if (uid.isPresent() && !uid.get().isBlank()) {
             this.accesscountService.save(new Accesscount( //
                 articleId, //
                 uid.get(), //

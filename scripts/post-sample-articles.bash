@@ -14,5 +14,5 @@ for i in {1..10}; do
         ${CURL_OPTS} \
         -H 'Content-Type: application/json' \
         --data-binary '{"title":"'"${title}"'","author":"'"${author}"'","body":"'"${body}"'"}' \
-        "${ARTICLE_URL}/articles/"
+        "${ARTICLE_URL}/api/articles/"
 done
