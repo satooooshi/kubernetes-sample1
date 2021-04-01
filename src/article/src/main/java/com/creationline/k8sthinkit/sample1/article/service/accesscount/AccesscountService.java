@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,11 @@ import reactor.core.publisher.Mono;
 public class AccesscountService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccesscountService.class);
+
+    private static final String URI_TEMPLATE_FOR_POST_ACCESSCOUNT = UriComponentsBuilder.newInstance() //
+        .pathSegment("api", "accesscounts") //
+        .build() //
+        .toString();
 
     private final WebClient client;
 
@@ -39,7 +45,7 @@ public class AccesscountService {
 
         // 単にPOSTするだけでエラーハンドリングはしない
         return this.client.post() //
-            .uri("/accesscounts/") //
+            .uri(URI_TEMPLATE_FOR_POST_ACCESSCOUNT) //
             .accept(MediaType.APPLICATION_JSON) //
             .contentType(MediaType.APPLICATION_JSON) //
             .bodyValue(access) //
