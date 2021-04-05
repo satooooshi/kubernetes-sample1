@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: website
+  name: website
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+      - name: website
+        image: website:dev
+        # command:
+        # - sh
+        # - -c
+        # - 'while true; do sleep 3600s; date; done'
+        env:
+        - name: ARTICLE_BASE_URL_FROM_SERVER
+          value: http://article:8080
+        - name: ARTICLE_BASE_URL_FROM_CLIENT
+          value: http://localhost:8081
+        - name: RANK_BASE_URL_FROM_SERVER
+          value: http://rank:8080
+        - name: RANK_BASE_URL_FROM_CLIENT
+          value: http://localhost:8083
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        ports:
+        - name: web
+          containerPort: 3000
+          protocol: TCP
+        - name: debugger
+          containerPort: 9229
+          protocol: TCP
