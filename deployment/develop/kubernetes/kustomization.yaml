@@ -14,6 +14,8 @@ resources:
 - service-rank.yaml
 - statefulset-rankdb.yaml
 - service-rankdb.yaml
+- deployment-website.yaml
+- service-website.yaml
 
 configMapGenerator:
 - name: article-init-db
