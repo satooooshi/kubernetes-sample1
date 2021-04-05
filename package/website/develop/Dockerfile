@@ -7,7 +7,6 @@ RUN mkdir /website/
 WORKDIR /website/
 
 COPY ./src/website/ /website/
-RUN ls -la /website/
 
 RUN yarn install \
     && yarn build
