@@ -29,7 +29,8 @@ export default Vue.component('article-list', {
     }
   },
   async fetch() {
-    const articleList = await this.$axios.$get("http://localhost:8081/api/articles/")
+    const articleBaseUrl = process.client ? process.env.articleBaseUrlFromClient : process.env.articleBaseUrlFromServer
+    const articleList = await this.$axios.$get(`${articleBaseUrl}/api/articles/`)
     for (const article of articleList) {
       this.$data.articles.push(article)
     }

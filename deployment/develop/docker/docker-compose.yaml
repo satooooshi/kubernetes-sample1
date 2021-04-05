@@ -88,3 +88,18 @@ services:
     ports:
       - '127.0.0.1:8083:8080'  # web
       - '127.0.0.1:8003:8000'  # debugger
+
+  website:
+    image: website:dev-docker
+    environment:
+      ARTICLE_BASE_URL_FROM_SERVER: http://article:8080
+      ARTICLE_BASE_URL_FROM_CLIENT: http://localhost:8081
+      RANK_BASE_URL_FROM_SERVER: http://rank:8080
+      RANK_BASE_URL_FROM_CLIENT: http://localhost:8083
+    volumes:
+      - type: bind
+        source: ../../../src/website/
+        target: /website/
+    ports:
+      - '127.0.0.1:3000:3000'  # web
+      - '127.0.0.1:9229:9229'  # debugger

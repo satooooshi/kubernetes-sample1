@@ -16,7 +16,8 @@ export default Vue.component('article-view', {
     }
   },
   async fetch() {
-    const url = `http://localhost:8081/api/articles/${this.$route.params.id}`
+    const articleBaseUrl = process.client ? process.env.articleBaseUrlFromClient : process.env.articleBaseUrlFromServer
+    const url = `${articleBaseUrl}/api/articles/${this.$route.params.id}`
     const options = {
       'headers': {
         'X-UID': 'hoge',
