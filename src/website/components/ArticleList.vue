@@ -29,17 +29,11 @@ export default Vue.component('article-list', {
     }
   },
   async fetch() {
-    const articleBaseUrl = process.client ? process.env.articleBaseUrlFromClient : process.env.articleBaseUrlFromServer
+    const articleBaseUrl = process.server ? this.$nuxt.context.env.articleBaseUrlFromServer : this.$nuxt.context.env.articleBaseUrlFromClient
     const articleList = await this.$axios.$get(`${articleBaseUrl}/api/articles/`)
     for (const article of articleList) {
       this.$data.articles.push(article)
     }
-  }
+  },
 })
 </script>
-
-<style scoped>
-/* .article-entry {
-  width: 14rem;
-} */
-</style>

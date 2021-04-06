@@ -6,17 +6,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from 'vue'
 
-export default Vue.component('article-view', {
+export default Vue.extend({
+  name: 'article-view',
   data() {
     return {
       'article': {},
     }
   },
   async fetch() {
-    const articleBaseUrl = process.client ? process.env.articleBaseUrlFromClient : process.env.articleBaseUrlFromServer
+    const articleBaseUrl = process.server ? this.$nuxt.context.env.articleBaseUrlFromServer : this.$nuxt.context.env.articleBaseUrlFromClient
     const url = `${articleBaseUrl}/api/articles/${this.$route.params.id}`
     const options = {
       'headers': {

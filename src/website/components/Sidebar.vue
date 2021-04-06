@@ -44,7 +44,7 @@ export default Vue.component('sidebar-outer', {
     const dayOfMonth = yesterday.getDate().toString().padStart(2, '0')
     const yesterdayISO8601 = `${year}-${month}-${dayOfMonth}`
 
-    const rankBaseUrl = process.client ? process.env.rankBaseUrlFromClient : process.env.rankBaseUrlFromServer
+    const rankBaseUrl = process.server ? this.$nuxt.context.env.rankBaseUrlFromServer : this.$nuxt.context.env.rankBaseUrlFromClient
     const url = `${rankBaseUrl}/api/ranks/daily/?date=${yesterdayISO8601}`
     this.$data.dailyRanking = await this.$axios.$get(url)
 
