@@ -37,6 +37,12 @@ export default Vue.component('sidebar-outer', {
     }
   },
   async fetch() {
+    if (this.$nuxt.context.isDev) {
+      console.log(`Sidebar.fetch() called`)
+      console.log(`    process.server: ${process.server}`)
+      console.log(`    this.$nuxt.context.$config.articleBaseUrl: ${this.$nuxt.context.$config.articleBaseUrl}`)
+      console.log(`    this.$nuxt.context.$config.rankBaseUrl: ${this.$nuxt.context.$config.rankBaseUrl}`)
+    }
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     const year = yesterday.getFullYear().toString().padStart(4, '0')
@@ -44,8 +50,7 @@ export default Vue.component('sidebar-outer', {
     const dayOfMonth = yesterday.getDate().toString().padStart(2, '0')
     const yesterdayISO8601 = `${year}-${month}-${dayOfMonth}`
 
-    const rankBaseUrl = process.client ? process.env.rankBaseUrlFromClient : process.env.rankBaseUrlFromServer
-    const url = `${rankBaseUrl}/api/ranks/daily/?date=${yesterdayISO8601}`
+    const url = `${this.$nuxt.context.$config.rankBaseUrl}/api/ranks/daily/?date=${yesterdayISO8601}`
     this.$data.dailyRanking = await this.$axios.$get(url)
 
   },

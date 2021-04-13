@@ -19,9 +19,9 @@ export uniquerank_random_shift="${RANDOM}"
 
 for aidx in "${!ARTICLES[@]}"; do
 
-  export uniqueAccess="$(( ( ( ${aidx} + ${uniquerank_random_shift} ) % ${#USERS[@]}  + 1 ) ))"
+  export uniqueAccess="$(( ( ( ${aidx} + ${uniquerank_random_shift} ) % ${#ARTICLES[@]}  + 1 ) ))"
   export scale_factor=3
-  export totalAccess="$(( ( ( ( ${aidx} + ${totalrank_random_shift} ) % ${#USERS[@]}  + 1 ) * ${scale_factor} ) - ( ${RANDOM} % ${scale_factor} ) ))"
+  export totalAccess="$(( ( ( ( ${aidx} + ${totalrank_random_shift} ) % ${#ARTICLES[@]}  + 1 ) * ${scale_factor} ) - ( ${RANDOM} % ${scale_factor} ) ))"
   if (( ${uniqueAccess} > ${totalAccess} )); then
     export totalAccess="${uniqueAccess}"
   fi

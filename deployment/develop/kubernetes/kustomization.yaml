@@ -16,6 +16,7 @@ resources:
 - service-rankdb.yaml
 - deployment-website.yaml
 - service-website.yaml
+- ingress.yaml
 
 configMapGenerator:
 - name: article-init-db
