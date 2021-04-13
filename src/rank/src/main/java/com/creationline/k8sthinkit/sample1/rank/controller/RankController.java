@@ -158,24 +158,12 @@ public class RankController {
         final Flux<DailyTotalEntry> updatedTotalRanks = this.rankCalculationService.updateDailyTotalAccessRank(date);
         final Flux<DailyUniqueEntry> updatedUniqueRanks = this.rankCalculationService.updateDailyUniqueAccessRank(date);
 
-        return Mono.zip( //
-                updatedTotalRanks //
-                    // .checkpoint("update result of total access rank") //
-                    // .log("update result of total access rank") //
-                    .last(), //
-                updatedUniqueRanks //
-                    // .checkpoint("update result of total access rank") //
-                    // .log("update result of total access rank") //
-                    .last() //
-            ) //
-            // .checkpoint("after zip") //
-            // .log("after zip")
-            .doOnNext((__) -> {
-                LOGGER.debug("complete manual daily rank update for {}", date);
+        return updatedTotalRanks.zipWith(updatedUniqueRanks) //
+            .then(Mono.just(date)) //
+            .doOnSuccess((d) -> {
+                LOGGER.debug("complete manual daily rank update for {}", d);
             }) //
-            // .checkpoint("after complete log") //
-            // .log("after complete log") //
-            .map((__) -> baseUri.queryParam("date", date) //
+            .map((d) -> baseUri.queryParam("date", d) //
                 .build() //
                 .toUri() //
             ) //
@@ -202,7 +190,9 @@ public class RankController {
 
         return new RankEntry( //
             totalEntry.getArticleId(), //
-            totalEntry.getTotalAccess() //
+            totalEntry.getTotalAccess(), //
+            totalEntry.getTitle(), //
+            totalEntry.getAuthor() //
         );
 
     }
@@ -222,7 +212,9 @@ public class RankController {
 
         return new RankEntry( //
             uniqueEntry.getArticleId(), //
-            uniqueEntry.getUniqueAccess() //
+            uniqueEntry.getUniqueAccess(), //
+            uniqueEntry.getTitle(), //
+            uniqueEntry.getAuthor() //
         );
 
     }
