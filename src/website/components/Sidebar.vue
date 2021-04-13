@@ -68,7 +68,7 @@ export default Vue.component('sidebar-outer', {
 </script>
 
 <style scoped>
-li > a {
+li > span > a {
   display: block;
   text-overflow: ellipsis;
   overflow: hidden;
