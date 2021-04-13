@@ -10,4 +10,4 @@ COPY ./src/website/ /website/
 
 RUN yarn install
 
-CMD yarn debug
+CMD yarn dev

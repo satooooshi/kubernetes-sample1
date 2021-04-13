@@ -5,11 +5,15 @@
       <li
         v-for="rank of dailyRanking.total"
         :key="rank.articleId">
-        <a
-          :href="`/article/${rank.articleId}/`"
-          >
-          [id={{rank.articleId}}](TODO) How to get title here
-        </a>
+        <span class="row">
+          <a
+            :href="`/article/${rank.articleId}/`"
+            class="col-8"
+            >
+            {{ rank.title }}
+          </a>
+          <span class="badge badge-primary">{{ rank.access }} access</span>
+        </span>
       </li>
     </ol>
     <h5>Access User Ranking</h5>
@@ -17,11 +21,15 @@
       <li
         v-for="rank of dailyRanking.unique"
         :key="rank.articleId">
-        <a
-          :href="`/article/${rank.articleId}/`"
-          >
-          [id={{rank.articleId}}](TODO) How to get title here
-        </a>
+        <span class="row">
+          <a
+            :href="`/article/${rank.articleId}/`"
+            class="col-8"
+            >
+            {{ rank.title }}
+          </a>
+          <span class="badge badge-primary">{{ rank.access }} user</span>
+        </span>
       </li>
     </ol>
   </div>
