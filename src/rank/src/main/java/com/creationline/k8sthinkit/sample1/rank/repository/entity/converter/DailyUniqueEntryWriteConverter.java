@@ -33,7 +33,9 @@ public class DailyUniqueEntryWriteConverter implements Converter<DailyUniqueEntr
             .append("date", Parameter.from(source.getDate())) //
             .append("rank", Parameter.from(source.getRank())) //
             .append("article_id", Parameter.from(source.getArticleId())) //
-            .append("unique_access", Parameter.from(source.getUniqueAccess()));
+            .append("unique_access", Parameter.from(source.getUniqueAccess())) //
+            .append("title", Parameter.from(source.getTitle())) //
+            .append("author", Parameter.from(source.getAuthor()));
 
         // parameter "id" exists only when updating
         if (source.getId() != null) {

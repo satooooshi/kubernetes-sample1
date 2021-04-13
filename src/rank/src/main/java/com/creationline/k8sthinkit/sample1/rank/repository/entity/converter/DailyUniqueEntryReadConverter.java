@@ -35,7 +35,9 @@ public class DailyUniqueEntryReadConverter implements Converter<Row, DailyUnique
             source.get("date", LocalDate.class), //
             source.get("rank", Integer.class), //
             source.get("article_id", Long.class), //
-            source.get("unique_access", Long.class) //
+            source.get("unique_access", Long.class),
+            source.get("title", String.class), //
+            source.get("author", String.class) //
         );
 
     }

@@ -33,7 +33,9 @@ public class DailyTotalEntryWriteConverter implements Converter<DailyTotalEntry,
             .append("date", Parameter.from(source.getDate())) //
             .append("rank", Parameter.from(source.getRank())) //
             .append("article_id", Parameter.from(source.getArticleId())) //
-            .append("total_access", Parameter.from(source.getTotalAccess()));
+            .append("total_access", Parameter.from(source.getTotalAccess())) //
+            .append("title", Parameter.from(source.getTitle())) //
+            .append("author", Parameter.from(source.getAuthor()));
 
         // parameter "id" exists only when updating
         if (source.getId() != null) {
