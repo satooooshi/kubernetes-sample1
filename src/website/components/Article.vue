@@ -2,7 +2,7 @@
   <div>
     <h3>{{ article.title }}</h3>
     <p class="text-right">Author: {{ article.author }}</p>
-    <div class="text-left">{{ article.body }}</div>
+    <div class="text-left" v-html="article.body"></div>
   </div>
 </template>
 
@@ -17,8 +17,13 @@ export default Vue.extend({
     }
   },
   async fetch() {
-    const articleBaseUrl = process.server ? this.$nuxt.context.env.articleBaseUrlFromServer : this.$nuxt.context.env.articleBaseUrlFromClient
-    const url = `${articleBaseUrl}/api/articles/${this.$route.params.id}`
+    if (this.$nuxt.context.isDev) {
+      console.log(`Article.fetch() called`)
+      console.log(`    process.server: ${process.server}`)
+      console.log(`    this.$nuxt.context.$config.articleBaseUrl: ${this.$nuxt.context.$config.articleBaseUrl}`)
+      console.log(`    this.$nuxt.context.$config.rankBaseUrl: ${this.$nuxt.context.$config.rankBaseUrl}`)
+    }
+    const url = `${this.$nuxt.context.$config.articleBaseUrl}/api/articles/${this.$route.params.id}`
     const options = {
       'headers': {
         'X-UID': 'hoge',

@@ -25,11 +25,11 @@ spec:
         - name: ARTICLE_BASE_URL_FROM_SERVER
           value: http://article:8080
         - name: ARTICLE_BASE_URL_FROM_CLIENT
-          value: http://localhost:8081
+          value: http://localhost
         - name: RANK_BASE_URL_FROM_SERVER
           value: http://rank:8080
         - name: RANK_BASE_URL_FROM_CLIENT
-          value: http://localhost:8083
+          value: http://localhost
         resources:
           requests:
             cpu: 200m

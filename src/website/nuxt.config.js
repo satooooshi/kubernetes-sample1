@@ -20,11 +20,14 @@ export default {
     host: '0.0.0.0',
   },
 
-  env: {
-    articleBaseUrlFromServer: process.env.ARTICLE_BASE_URL_FROM_SERVER,
-    rankBaseUrlFromServer: process.env.RANK_BASE_URL_FROM_SERVER,
-    articleBaseUrlFromClient: process.env.ARTICLE_BASE_URL_FROM_CLIENT,
-    rankBaseUrlFromClient: process.env.RANK_BASE_URL_FROM_CLIENT,
+  publicRuntimeConfig: {
+    articleBaseUrl: process.env.ARTICLE_BASE_URL_FROM_CLIENT,
+    rankBaseUrl: process.env.RANK_BASE_URL_FROM_CLIENT,
+  },
+
+  privateRuntimeConfig: {
+    articleBaseUrl: process.env.ARTICLE_BASE_URL_FROM_SERVER,
+    rankBaseUrl: process.env.RANK_BASE_URL_FROM_SERVER,
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
