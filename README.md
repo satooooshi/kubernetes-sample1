@@ -23,19 +23,28 @@
 ```mermaid
 %% TODO make picture
 graph LR
-  ui["UI"] -- "get article" --> article["Article"]
-  ui -- "get ranking" --> rank["Rank"]
-  article -- "update access count" --> accesscount["AccessCount"]
-  rank -- "get access count" --> accesscount
-  subgraph articlesvc["Article Service"]
-    article -- "get article" --> articledb[("Article DB")]
+  browser["Browser"]
+  browser --> article
+  browser --> website
+  subgraph k8s["Kubernetes"]
+    website -. "SSR(*)" .-> article["Article"]
+    website -. "SSR(*)" .-> rank["Rank"]
+    subgraph websitesvc["Web Site Service"]
+      website["Web Site"]
+    end
+    article -- "update access count" --> accesscount["AccessCount"]
+    rank -- "get access count" --> accesscount
+    subgraph articlesvc["Article Service"]
+      article -- "get article" --> articledb[("Article DB")]
+    end
+    subgraph accesscountsvc["AccessCount Service"]
+      accesscount -- "get/update access count" --> accesscountdb[("AccessCount DB")]
+    end
+    subgraph ranksvc["Rank Service"]
+      rank -- "get/update ranking" --> rankdb[("Rank DB")]
+    end
   end
-  subgraph accesscountsvc["AccessCount Service"]
-    accesscount -- "get/update access count" --> accesscountdb[("AccessCount DB")]
-  end
-  subgraph ranksvc["Rank Service"]
-    rank -- "get/update ranking" --> rankdb[("Rank DB")]
-  end
+  browser --> rank
 ```
 
 ```mermaid
@@ -43,9 +52,20 @@ graph LR
 graph TD
   browser[Browser] --> articleIng
   browser --> rankIng
+  browser --> websiteIng
   subgraph cluster["Kubernetes cluster"]
     articlePod --> accesscountSvc
     rankPod --> accesscountSvc
+    websitePod -. "SSR(*)" .-> articleSvc
+    subgraph websiteApp["app: Website"]
+      websiteIng(["ing/website"]) --> websiteSvc(["svc/website"])
+      websiteSvc --> websitePod
+      subgraph websiteDeploy["deploy/website"]
+        subgraph websiteRs["rs/website-*"]
+          websitePod(["pod/website-*"])
+        end
+      end
+    end
     subgraph articleApp["app: Article"]
       articleIng(["ing/article"]) --> articleSvc
       articleSvc(["svc/article"]) --> articlePod
@@ -87,6 +107,7 @@ graph TD
         rankDBPod(["pod/rankdb-*"])
       end
     end
+    websitePod -. "SSR(*)" .-> rankSvc
   end
 ```
 
@@ -125,8 +146,10 @@ Run with on-premise kubernetes (constructed by `kubeadm`), `kind`, `minikube`, a
 - Build container images for development
 
   ```bash
-  ./scripts/build-develop.sh "${component}"
+  REPOSITORY=<repo URL> ./scripts/build-develop.sh "${component}"
   ```
+
+  - Build container image will be tagged: `<repo URL>/<component>:dev`
 
 - Setup `kubectl` command to manipulate target kubernetes cluster:
 
@@ -178,6 +201,51 @@ Run your application:
 ```bash
 ./scripts/run-develop-host.sh "${component}"
 ```
+
+### How to create dummy data
+
+We have some scripts to manipulate datas for development.
+
+#### Post sample articles
+
+```bash
+ARTICLE_URL=<article endpoint URL> ./scripts/post-sample-articles.bash
+```
+
+- `<article endpoint URL>`
+  - Article service endpoint URL fomatted `<scheme>://<host>[:<port>]`
+  - Default: `http://localhost:8081`
+
+#### Create dummy access record
+
+```bash
+ARTICLE_URL=<article endpoint URL> ACCESSCOUNT_URL=<accesscount endpoint URL> ./scripts/dummy-access-at.bash <access date>
+```
+
+- `<article endpoint URL>`
+  - Article service endpoint URL fomatted `<scheme>://<host>[:<port>]`
+  - Default: `http://localhost:8081`
+- `<accesscount endpoint URL>`
+  - Accesscount service endpoint URL fomatted `<scheme>://<host>[:<port>]`
+  - Default: `http://localhost:8082`
+- `<access date>`
+  - Date for dummy access. Formatted `YYYY-MM-DD`
+  - Website shows yesterday's ranking. If you want to create dummy data to show website's ranking, you need to specify yesterday.
+  - No default value.
+
+#### Update ranking
+
+```bash
+RANK_URL=<rank endpoint URL> ./scripts/update-daily-rank.bash <ranking date>
+```
+
+- `<rank endpoint URL>`
+  - Rank service endpoint URL fomatted `<scheme>://<host>[:<port>]`
+  - Default: `http://localhost:8083`
+- `<ranking date>`
+  - Date for updating ranking. Formatted `YYYY-MM-DD`
+  - Website shows yesterday's ranking. If you want to create dummy data to show website's ranking, you need to specify yesterday.
+  - No default value.
 
 ## Troubleshoot memo
 
