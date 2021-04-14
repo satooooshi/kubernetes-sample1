@@ -28,3 +28,13 @@ configMapGenerator:
 - name: rank-init-db
   files:
   - config/rankdb/schema.sql
+
+images:
+- name: article
+  newName: registry.example.com/path/to/repository/article
+- name: accesscount
+  newName: registry.example.com/path/to/repository/accesscount
+- name: rank
+  newName: registry.example.com/path/to/repository/rank
+- name: website
+  newName: registry.example.com/path/to/repository/website
