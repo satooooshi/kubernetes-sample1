@@ -14,4 +14,10 @@ public class RankEntry {
     /** アクセス数 */
     private Long access;
 
+    /** タイトル */
+    private String title;
+
+    /** 著者 */
+    private String author;
+
 }

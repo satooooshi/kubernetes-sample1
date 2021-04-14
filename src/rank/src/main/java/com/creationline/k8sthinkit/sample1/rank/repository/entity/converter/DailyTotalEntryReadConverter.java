@@ -35,7 +35,9 @@ public class DailyTotalEntryReadConverter implements Converter<Row, DailyTotalEn
             source.get("date", LocalDate.class), //
             source.get("rank", Integer.class), //
             source.get("article_id", Long.class), //
-            source.get("total_access", Long.class) //
+            source.get("total_access", Long.class), //
+            source.get("title", String.class), //
+            source.get("author", String.class) //
         );
 
     }

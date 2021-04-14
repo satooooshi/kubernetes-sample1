@@ -38,6 +38,14 @@ public class DailyTotalEntry {
     @Column("total_access")
     private Long totalAccess;
 
+    /** タイトル */
+    @NonNull
+    private String title;
+
+    /** 著者 */
+    @NonNull
+    private String author;
+
     /**
      * ID付与.
      * 
@@ -52,7 +60,9 @@ public class DailyTotalEntry {
             this.date, //
             this.rank, //
             this.articleId, //
-            this.totalAccess //
+            this.totalAccess, //
+            this.title, //
+            this.author //
         );
     }
 

@@ -38,6 +38,14 @@ public class DailyUniqueEntry {
     @Column("unique_access")
     private Long uniqueAccess;
 
+    /** タイトル */
+    @NonNull
+    private String title;
+
+    /** 著者 */
+    @NonNull
+    private String author;
+
     /**
      * ID付与.
      * 
@@ -52,7 +60,9 @@ public class DailyUniqueEntry {
             this.date, //
             this.rank, //
             this.articleId, //
-            this.uniqueAccess //
+            this.uniqueAccess, //
+            this.title, //
+            this.author //
         );
     }
 
