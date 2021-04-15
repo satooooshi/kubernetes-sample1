@@ -26,7 +26,7 @@ export default Vue.extend({
     const url = `${this.$nuxt.context.$config.articleBaseUrl}/api/articles/${this.$route.params.id}`
     const options = {
       'headers': {
-        'X-UID': 'hoge',
+        'X-UID': 'user1001',
       },
     }
     this.$data.article = await this.$axios.$get(url, options)
