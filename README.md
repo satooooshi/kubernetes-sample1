@@ -43,6 +43,7 @@ graph LR
     subgraph ranksvc["Rank Service"]
       rank -- "get/update ranking" --> rankdb[("Rank DB")]
     end
+    rank --> article
   end
   browser --> rank
 ```
@@ -107,6 +108,7 @@ graph TD
         rankDBPod(["pod/rankdb-*"])
       end
     end
+    rankPod --> articleSvc
     websitePod -. "SSR(*)" .-> rankSvc
   end
 ```
