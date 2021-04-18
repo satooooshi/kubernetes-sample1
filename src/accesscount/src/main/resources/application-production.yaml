@@ -1,9 +1,10 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://accesscountdb:5432/accesscount
+    url: ${database.url}
     username: ${database.username}
     password: ${database.password}
 # following credentials need override by environment variables
 database:
+  url: ''       # DATABASE_URL
   username: ''  # DATABASE_USERNAME
   password: ''  # DATABASE_PASSWORD

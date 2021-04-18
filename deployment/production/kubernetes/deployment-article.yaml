@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: article
+  name: article
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: article
+  template:
+    metadata:
+      labels:
+        app: article
+    spec:
+      containers:
+      - name: article
+        image: article:prod
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: articledb-config
+              key: DATABASE_URL
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: articledb-config
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: articledb-config
+              key: DATABASE_PASSWORD
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        ports:
+        - name: web
+          containerPort: 8080
+          protocol: TCP
