@@ -4,19 +4,16 @@ kind: Kustomization
 resources:
 - deployment-article.yaml
 - service-article.yaml
-- statefulset-articledb.yaml
-- service-articledb.yaml
+- ingress-article.yaml
 - deployment-accesscount.yaml
 - service-accesscount.yaml
-- statefulset-accesscountdb.yaml
-- service-accesscountdb.yaml
+- ingress-accesscount.yaml
 - deployment-rank.yaml
 - service-rank.yaml
-- statefulset-rankdb.yaml
-- service-rankdb.yaml
+- ingress-rank.yaml
 - deployment-website.yaml
 - service-website.yaml
-- ingress.yaml
+- ingress-website.yaml
 
 configMapGenerator:
 - name: article-init-db

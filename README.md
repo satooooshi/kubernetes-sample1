@@ -20,98 +20,103 @@
 
 ## Architecture
 
-```mermaid
-%% TODO make picture
-graph LR
-  browser["Browser"]
-  browser --> article
-  browser --> website
-  subgraph k8s["Kubernetes"]
-    website -. "SSR(*)" .-> article["Article"]
-    website -. "SSR(*)" .-> rank["Rank"]
-    subgraph websitesvc["Web Site Service"]
-      website["Web Site"]
-    end
-    article -- "update access count" --> accesscount["AccessCount"]
-    rank -- "get access count" --> accesscount
-    subgraph articlesvc["Article Service"]
-      article -- "get article" --> articledb[("Article DB")]
-    end
-    subgraph accesscountsvc["AccessCount Service"]
-      accesscount -- "get/update access count" --> accesscountdb[("AccessCount DB")]
-    end
-    subgraph ranksvc["Rank Service"]
-      rank -- "get/update ranking" --> rankdb[("Rank DB")]
-    end
-    rank --> article
-  end
-  browser --> rank
-```
+- High level architecture
 
-```mermaid
-%% こういう、Kubernetesリソースを意識した図もあったほうがよさそう
-graph TD
-  browser[Browser] --> articleIng
-  browser --> rankIng
-  browser --> websiteIng
-  subgraph cluster["Kubernetes cluster"]
-    articlePod --> accesscountSvc
-    rankPod --> accesscountSvc
-    websitePod -. "SSR(*)" .-> articleSvc
-    subgraph websiteApp["app: Website"]
-      websiteIng(["ing/website"]) --> websiteSvc(["svc/website"])
-      websiteSvc --> websitePod
-      subgraph websiteDeploy["deploy/website"]
-        subgraph websiteRs["rs/website-*"]
-          websitePod(["pod/website-*"])
+  ```mermaid
+  %% TODO make picture
+  graph TD
+    browser["Browser"]
+    browser --> article
+    browser --> website
+    subgraph k8s["Kubernetes"]
+      website -. "SSR(*)" .-> article["Article"]
+      website -. "SSR(*)" .-> rank["Rank"]
+      subgraph websitesvc["Web Site Service"]
+        website["Web Site"]
+      end
+      article -- "update access count" --> accesscount["AccessCount"]
+      rank -- "get access count" --> accesscount
+      subgraph articlesvc["Article Service"]
+        article -- "get article" --> articledb[("Article DB")]
+      end
+      subgraph accesscountsvc["AccessCount Service"]
+        accesscount -- "get/update access count" --> accesscountdb[("AccessCount DB")]
+      end
+      subgraph ranksvc["Rank Service"]
+        rank -- "get/update ranking" --> rankdb[("Rank DB")]
+      end
+      rank --> article
+    end
+    browser --> rank
+  ```
+
+- Kubernetes resources
+
+  ```mermaid
+  %% こういう、Kubernetesリソースを意識した図もあったほうがよさそう
+  graph TD
+    browser[Browser] --> articleIng
+    browser --> rankIng
+    browser --> websiteIng
+    subgraph cluster["Kubernetes cluster"]
+      articlePod --> accesscountSvc
+      rankPod --> accesscountSvc
+      websitePod -. "SSR(*)" .-> articleSvc
+      subgraph websiteApp["app: Website"]
+        websiteIng(["ing/website"]) --> websiteSvc(["svc/website"])
+        websiteSvc --> websitePod
+        subgraph websiteDeploy["deploy/website"]
+          subgraph websiteRs["rs/website-*"]
+            websitePod(["pod/website-*"])
+          end
         end
       end
-    end
-    subgraph articleApp["app: Article"]
-      articleIng(["ing/article"]) --> articleSvc
-      articleSvc(["svc/article"]) --> articlePod
-      articlePod --> articleDBSvc
-      subgraph articleDeploy["deploy/article"]
-        subgraph articleRs["rs/article-*"]
-          articlePod(["pod/article-*"])
+      subgraph articleApp["app: Article"]
+        articleIng(["ing/article"]) --> articleSvc
+        articleSvc(["svc/article"]) --> articlePod
+        articlePod --> articleDBSvc
+        subgraph articleDeploy["deploy/article"]
+          subgraph articleRs["rs/article-*"]
+            articlePod(["pod/article-*"])
+          end
+        end
+        articleDBSvc(["svc/articledb"]) --> articleDBPod
+        subgraph articleDBSts["sts/articledb"]
+          articleDBPod(["pod/articledb-*"])
         end
       end
-      articleDBSvc(["svc/articledb"]) --> articleDBPod
-      subgraph articleDBSts["sts/articledb"]
-        articleDBPod(["pod/articledb-*"])
-      end
-    end
-    subgraph accesscountApp["app: AccessCount"]
-      accesscountSvc(["svc/accesscount"]) --> accesscountPod
-      accesscountPod --> accesscountDBSvc
-      subgraph accesscountDeploy["deploy/accesscount"]
-        subgraph accesscountRs["rs/accesscount-*"]
-          accesscountPod(["pod/accesscount-*"])
+      subgraph accesscountApp["app: AccessCount"]
+        accesscountInt(["ing/accesscount"]) --> accesscountSvc
+        accesscountSvc(["svc/accesscount"]) --> accesscountPod
+        accesscountPod --> accesscountDBSvc
+        subgraph accesscountDeploy["deploy/accesscount"]
+          subgraph accesscountRs["rs/accesscount-*"]
+            accesscountPod(["pod/accesscount-*"])
+          end
+        end
+        accesscountDBSvc(["svc/accesscountdb"]) --> accesscountDBPod
+        subgraph accesscountDBSts["sts/accesscountdb"]
+          accesscountDBPod(["pod/accesscountdb-*"])
         end
       end
-      accesscountDBSvc(["svc/accesscountdb"]) --> accesscountDBPod
-      subgraph accesscountDBSts["sts/accesscountdb"]
-        accesscountDBPod(["pod/accesscountdb-*"])
-      end
-    end
-    subgraph rankApp["app: Rank"]
-      rankIng(["ing/rank"]) --> rankSvc
-      rankSvc(["svc/rank"]) --> rankPod
-      rankPod --> rankDBSvc
-      subgraph rankDeploy["deploy/rank"]
-        subgraph rankRs["rs/rank-*"]
-          rankPod(["pod/rank-*"])
+      subgraph rankApp["app: Rank"]
+        rankIng(["ing/rank"]) --> rankSvc
+        rankSvc(["svc/rank"]) --> rankPod
+        rankPod --> rankDBSvc
+        subgraph rankDeploy["deploy/rank"]
+          subgraph rankRs["rs/rank-*"]
+            rankPod(["pod/rank-*"])
+          end
+        end
+        rankDBSvc(["svc/rankdb"]) --> rankDBPod
+        subgraph rankDBSts["sts/rankdb"]
+          rankDBPod(["pod/rankdb-*"])
         end
       end
-      rankDBSvc(["svc/rankdb"]) --> rankDBPod
-      subgraph rankDBSts["sts/rankdb"]
-        rankDBPod(["pod/rankdb-*"])
-      end
+      rankPod --> articleSvc
+      websitePod -. "SSR(*)" .-> rankSvc
     end
-    rankPod --> articleSvc
-    websitePod -. "SSR(*)" .-> rankSvc
-  end
-```
+  ```
 
 ## Develop
 
