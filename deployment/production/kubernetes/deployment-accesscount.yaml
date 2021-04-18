@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: accesscount
+  name: accesscount
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accesscount
+  template:
+    metadata:
+      labels:
+        app: accesscount
+    spec:
+      containers:
+      - name: accesscount
+        image: accesscount:prod
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: accesscountdb-config
+              key: DATABASE_URL
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: accesscountdb-config
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: accesscountdb-config
+              key: DATABASE_PASSWORD
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        ports:
+        - name: web
+          containerPort: 8080
+          protocol: TCP
