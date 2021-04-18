@@ -17,22 +17,9 @@ spec:
       containers:
       - name: rank
         image: rank:prod
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: rankdb-config
-              key: DATABASE_URL
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: rankdb-config
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: rankdb-config
-              key: DATABASE_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: rank-config
         resources:
           requests:
             cpu: 200m
