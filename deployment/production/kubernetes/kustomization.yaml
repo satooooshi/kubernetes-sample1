@@ -15,28 +15,21 @@ resources:
 - service-website.yaml
 - ingress-website.yaml
 
-configMapGenerator:
-- name: article-init-db
-  files:
-  - config/articledb/schema.sql
-- name: accesscount-init-db
-  files:
-  - config/accesscountdb/schema.sql
-- name: rank-init-db
-  files:
-  - config/rankdb/schema.sql
-
 secretGenerator:
-- name: articledb-config
+- name: article-config
   envs:
-  - config/articledb/config.env
-- name: accesscountdb-config
+  - config/article/config.env
+- name: accesscount-config
   envs:
-  - config/accesscountdb/config.env
-- name: rankdb-config
+  - config/accesscount/config.env
+- name: rank-config
   envs:
-  - config/rankdb/config.env
+  - config/rank/config.env
 
+configMapGenerator:
+- name: website-config
+  envs:
+  - config/website/config.env
 
 images:
 - name: article
