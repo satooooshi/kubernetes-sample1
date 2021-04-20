@@ -11,5 +11,5 @@ spec:
   ports:
   - name: web
     port: 8080
-    targetPort: 8080
+    targetPort: web
   # don't expose debugger port

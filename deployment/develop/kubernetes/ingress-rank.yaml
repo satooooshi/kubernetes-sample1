@@ -11,7 +11,7 @@ spec:
       - backend:
           service:
             name: rank
-            port: 
-              number: 8080
+            port:
+              name: web
         path: /api/ranks
         pathType: Prefix

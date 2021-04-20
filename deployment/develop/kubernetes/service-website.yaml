@@ -11,5 +11,5 @@ spec:
   ports:
   - name: web
     port: 3000
-    targetPort: 3000
+    targetPort: web
   # don't expose debugger port
