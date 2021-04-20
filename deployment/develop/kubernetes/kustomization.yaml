@@ -34,10 +34,10 @@ configMapGenerator:
 
 images:
 - name: article
-  newName: registry.example.com/path/to/repository/article
+  newName: registry.gitlab.com/thinkit-kubernetes-sample1/article
 - name: accesscount
-  newName: registry.example.com/path/to/repository/accesscount
+  newName: registry.gitlab.com/thinkit-kubernetes-sample1/accesscount
 - name: rank
-  newName: registry.example.com/path/to/repository/rank
+  newName: registry.gitlab.com/thinkit-kubernetes-sample1/rank
 - name: website
-  newName: registry.example.com/path/to/repository/website
+  newName: registry.gitlab.com/thinkit-kubernetes-sample1/website
