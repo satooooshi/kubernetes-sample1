@@ -12,6 +12,6 @@ spec:
           service:
             name: article
             port: 
-              number: 8080
+              name: web
         path: /api/articles
         pathType: Prefix
