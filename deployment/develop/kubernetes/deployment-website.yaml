@@ -17,19 +17,9 @@ spec:
       containers:
       - name: website
         image: website:dev
-        # command:
-        # - sh
-        # - -c
-        # - 'while true; do sleep 3600s; date; done'
-        env:
-        - name: ARTICLE_BASE_URL_FROM_SERVER
-          value: http://article:8080
-        - name: ARTICLE_BASE_URL_FROM_CLIENT
-          value: http://localhost
-        - name: RANK_BASE_URL_FROM_SERVER
-          value: http://rank:8080
-        - name: RANK_BASE_URL_FROM_CLIENT
-          value: http://localhost
+        envFrom:
+        - configMapRef:
+            name: website-config
         resources:
           requests:
             cpu: 200m
