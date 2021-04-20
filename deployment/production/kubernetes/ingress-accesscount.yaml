@@ -12,6 +12,6 @@ spec:
           service:
             name: accesscount
             port: 
-              number: 8080
+              name: web
         path: /api/accesscounts
         pathType: Prefix

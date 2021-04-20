@@ -12,6 +12,6 @@ spec:
           service:
             name: website
             port: 
-              number: 3000
+              name: web
         path: /
         pathType: Prefix
