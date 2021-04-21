@@ -5,14 +5,14 @@
       <li
         v-for="rank of dailyRanking.total"
         :key="rank.articleId">
-        <span class="row">
+        <span class="row mb-1">
           <a
             :href="`/article/${rank.articleId}/`"
             class="col-8"
             >
             {{ rank.title }}
           </a>
-          <span class="badge badge-primary">{{ rank.access }} access</span>
+          <span class="badge badge-primary m-auto">{{ rank.access }} access</span>
         </span>
       </li>
     </ol>
@@ -21,14 +21,14 @@
       <li
         v-for="rank of dailyRanking.unique"
         :key="rank.articleId">
-        <span class="row">
+        <span class="row mb-1">
           <a
             :href="`/article/${rank.articleId}/`"
             class="col-8"
             >
             {{ rank.title }}
           </a>
-          <span class="badge badge-primary">{{ rank.access }} user</span>
+          <span class="badge badge-primary m-auto">{{ rank.access }} user</span>
         </span>
       </li>
     </ol>
