@@ -2,6 +2,7 @@
   <div>
   <b-navbar
     fixed="top"
+    class="navbar-dark bg-dark"
     >
     <b-navbar-brand>TechWatch</b-navbar-brand>
     <b-collapse is-nav>
