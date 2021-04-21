@@ -31,6 +31,9 @@ configMapGenerator:
 - name: rank-init-db
   files:
   - config/rankdb/schema.sql
+- name: website-config
+  envs:
+  - config/website/config.env
 
 images:
 - name: article
