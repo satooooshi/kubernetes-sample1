@@ -23,7 +23,6 @@
 - High level architecture
 
   ```mermaid
-  %% TODO make picture
   graph TD
     browser["Browser"]
     browser --> article
@@ -53,7 +52,6 @@
 - Kubernetes resources
 
   ```mermaid
-  %% こういう、Kubernetesリソースを意識した図もあったほうがよさそう
   graph TD
     browser[Browser] --> articleIng
     browser --> rankIng
