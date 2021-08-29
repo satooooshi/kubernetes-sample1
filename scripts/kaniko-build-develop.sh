@@ -25,12 +25,12 @@ if [ "${REPOSITORY:-x}" == 'x' ]; then
   destination_opt="--no-push"
   cache_opt=""
 else
-  destination_opt="--destination ${REPOSITORY}${component}:dev"
-  cache_opt="--cache true"
+  destination_opt="--destination=${REPOSITORY}${component}:dev"
+  cache_opt="--cache=true"
 fi
 
 "${KANIKO_EXECUTOR}" \
   ${destination_opt} \
   ${cache_opt} \
-  --dockerfile "${PWD}/package/${component}/develop/Dockerfile" \
-  --context "dir://${PWD}" \
+  --dockerfile="${PWD}/package/${component}/develop/Dockerfile" \
+  --context="dir://${PWD}" \
