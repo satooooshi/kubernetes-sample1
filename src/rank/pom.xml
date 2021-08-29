@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.creationline.k8sthinkit.sample1</groupId>
 	<artifactId>rank</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>rank</name>
 	<description>ThinkIT Kubernetes Sample Application</description>
 	<properties>
