@@ -273,3 +273,9 @@ RANK_URL=<rank endpoint URL> ./scripts/update-daily-rank.bash <ranking date>
     ```bash
     mvn install 2>&1 | iconv -f sjis -t utf-8
     ```
+
+## Change Log
+
+|   日  付   |                                                                    |
+|:----------:|:-------------------------------------------------------------------|
+| 2021/08/30 | 各アプリケーションのログに出力しているパスが間違っていたものを修正 |
