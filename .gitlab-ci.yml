@@ -1,0 +1,79 @@
+stages:
+  - build
+
+.build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    REPOSITORY: $CI_REGISTRY_IMAGE
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" > /kaniko/.docker/config.json
+    # To avoid 'not found(specified shebang)' error, we use sh command directly.
+    # (kaniko image has no file at /usr/bin/env)
+    - sh ./scripts/$SCRIPT_FILE $COMPONENT
+
+
+.build-prod:
+  extends: .build
+  variables:
+    SCRIPT_FILE: 'kaniko-build-production.sh'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "feature/setup-ci"'
+      variables:
+        REPOSITORY: ''
+
+build-prod-article:
+  extends: .build-prod
+  variables:
+    COMPONENT: article
+
+build-prod-accesscount:
+  extends: .build-prod
+  variables:
+    COMPONENT: accesscount
+
+build-prod-rank:
+  extends: .build-prod
+  variables:
+    COMPONENT: rank
+
+build-prod-website:
+  extends: .build-prod
+  variables:
+    COMPONENT: website
+
+
+.build-dev:
+  extends: .build
+  variables:
+    SCRIPT_FILE: 'kaniko-build-develop.sh'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "feature/setup-ci"'
+      variables:
+        REPOSITORY: ''
+
+build-dev-article:
+  extends: .build-dev
+  variables:
+    COMPONENT: article
+
+build-dev-accesscount:
+  extends: .build-dev
+  variables:
+    COMPONENT: accesscount
+
+build-dev-rank:
+  extends: .build-dev
+  variables:
+    COMPONENT: rank
+
+build-dev-website:
+  extends: .build-dev
+  variables:
+    COMPONENT: website
+
