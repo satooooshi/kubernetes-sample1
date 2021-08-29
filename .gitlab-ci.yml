@@ -20,6 +20,8 @@ stages:
   extends: .build
   variables:
     SCRIPT_FILE: 'kaniko-build-production.sh'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == main'
 
 build-prod-article:
   extends: .build-prod
@@ -46,6 +48,8 @@ build-prod-website:
   extends: .build
   variables:
     SCRIPT_FILE: 'kaniko-build-develop.sh'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == main'
 
 build-dev-article:
   extends: .build-dev
