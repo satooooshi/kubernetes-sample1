@@ -30,9 +30,9 @@ build-prod-accesscount:
     COMPONENT: accesscount
 
 build-prod-rank:
-  extends: .build-rank
+  extends: .build-prod
   variables:
-    COMPONENT: article
+    COMPONENT: rank
 
 build-prod-website:
   extends: .build-prod
