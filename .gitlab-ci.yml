@@ -9,10 +9,6 @@ stages:
   variables:
     REPOSITORY: $CI_REGISTRY_IMAGE
   script:
-    # DEBUG CODE (following from this line)
-    - echo '${REPOSITORY} = '"${REPOSITORY}"
-    - echo '${CI_REGISTRY_IMAGE} = '"${CI_REGISTRY_IMAGE}"
-    # DEBUG CODE (above from this line)
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" > /kaniko/.docker/config.json
     - cd $CI_PROJECT_DIR
