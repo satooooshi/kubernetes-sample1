@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -85,9 +86,14 @@ public class ArticleController {
         }, //
         produces = Controllers.MIMETYPE_PRODUCING // 応答するMIMETYPE
     )
-    public Flux<ArticleEntryResponse> getAllArticles() {
+    public Flux<ArticleEntryResponse> getAllArticles(
 
-        LOGGER.debug("access / dispatched");
+        @NonNull //
+        final ServerHttpRequest request //
+
+    ) {
+
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
 
         // 永続化層 (ArticleRepository) の一覧メソッドでArticleをストリームとして取得し
         // convertToEntry変換したストリームで応答する。
@@ -114,20 +120,23 @@ public class ArticleController {
     )
     public Mono<ResponseEntity<ArticleResponse>> getArticle( //
 
+        @NonNull //
+        final ServerHttpRequest request, //
+
         @PathVariable("article_id") //
-        @NonNull
+        @NonNull //
         final Long articleId, //
 
         @RequestHeader( //
             name = "X-UID", //
             required = false //
         ) //
-        @NonNull
+        @NonNull //
         final Optional<String> uid //
     
     ) throws ArticleNotFoundException {
 
-        LOGGER.debug("access /{}/ dispatched", articleId);
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
 
         // X-UIDヘッダの値が存在するときはaccesscountServiceにアクセスがあったことを通知する
         if (uid.isPresent() && !uid.get().isBlank()) {
@@ -170,11 +179,17 @@ public class ArticleController {
         produces = Controllers.MIMETYPE_PRODUCING // 応答するMIMETYPE
     )
     public Mono<ResponseEntity<ArticleResponse>> createArticle(
-        
-        @RequestBody Mono<ArticleCreationRequest> creationRequest
+
+        @NonNull //
+        final ServerHttpRequest request, //
+
+        @RequestBody //
+        Mono<ArticleCreationRequest> creationRequest //
     
     ) {
-    
+
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
+
         return creationRequest.map(this::convertToDraft) //
             .flatMap(this.articleRepository::save) //
             .map(entity -> {

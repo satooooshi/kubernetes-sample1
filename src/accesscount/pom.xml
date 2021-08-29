@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.creationline.k8sthinkit.sample1</groupId>
 	<artifactId>accesscount</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>accesscount</name>
 	<description>ThinkIT Kubernetes Sample Application</description>
 	<properties>

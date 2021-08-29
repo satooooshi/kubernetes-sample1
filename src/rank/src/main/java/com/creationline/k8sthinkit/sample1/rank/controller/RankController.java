@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -96,6 +97,9 @@ public class RankController {
     )
     public Mono<DailyRankResponse> getDailyRank( //
 
+        @NonNull //
+        final ServerHttpRequest request, //
+
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) //
         @RequestParam("date") //
         @NonNull //
@@ -103,7 +107,7 @@ public class RankController {
 
     ) {
 
-        LOGGER.debug("/ dispatched.");
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
         LOGGER.trace("  date = {}", date);
 
         final Mono<List<RankEntry>> totalAccessEntries = this.dailyTotalEntryRepository.findByDate(date) //
@@ -145,14 +149,19 @@ public class RankController {
     )
     public Mono<ResponseEntity<?>> updateDailyRank( //
 
+        @NonNull //
+        final ServerHttpRequest request, //
+
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) //
         @RequestParam("date") //
         final LocalDate date, //
+
         @NonNull //
         final UriComponentsBuilder baseUri //
 
     ) {
 
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
         LOGGER.debug("start manual daily rank update for {}", date);
 
         final Flux<DailyTotalEntry> updatedTotalRanks = this.rankCalculationService.updateDailyTotalAccessRank(date);

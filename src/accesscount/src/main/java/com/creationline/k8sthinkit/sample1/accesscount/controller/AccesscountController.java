@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,12 +71,15 @@ public class AccesscountController {
     )
     public Mono<ResponseEntity<?>> recordAccess( //
 
+        @NonNull //
+        final ServerHttpRequest request, //
+
         @RequestBody //
         final Mono<AccessRecordRequest> accessRecord //
 
     ) {
 
-        LOGGER.debug("access POST /accesscounts/ dispatched");
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
 
         return accessRecord.map(this::convertAccessRecordToAccesscountDraft) //
             .flatMap(this.accesscountRepository::save) //
@@ -106,6 +110,9 @@ public class AccesscountController {
     )
     public Mono<ResponseEntity<AccessStatsResponse>> stats( //
 
+        @NonNull //
+        final ServerHttpRequest request, //
+
         @RequestParam("article") //
         final Long articleId, //
  
@@ -119,7 +126,7 @@ public class AccesscountController {
 
     ) {
 
-        LOGGER.debug("access GET /accesscounts/stats/ dispatched");
+        LOGGER.debug("access {} {} dispatched", request.getMethod(), request.getPath());
         LOGGER.trace("  arguments: article: {}", articleId);
         LOGGER.trace("  arguments: from   : {}", from);
         LOGGER.trace("  arguments: to     : {}", to);
