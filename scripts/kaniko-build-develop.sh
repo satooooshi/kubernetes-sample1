@@ -23,11 +23,14 @@ export component="$1"
 
 if [ "${REPOSITORY:-x}" == 'x' ]; then
   destination_opt="--no-push"
+  cache_opt=""
 else
-  destination_opt="--destination ${REPOSITORY}${component}:prod"
+  destination_opt="--destination ${REPOSITORY}${component}:dev"
+  cache_opt="--cache true"
 fi
 
 "${KANIKO_EXECUTOR}" \
   ${destination_opt} \
-  --dockerfile "${PWD}/package/${component}/production/Dockerfile" \
-  --context "dir://${PWD}"
+  ${cache_opt} \
+  --dockerfile "${PWD}/package/${component}/develop/Dockerfile" \
+  --context "dir://${PWD}" \
