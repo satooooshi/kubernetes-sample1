@@ -10,7 +10,7 @@ stages:
     REPOSITORY: $CI_REGISTRY_IMAGE
   script:
     - set -euvx
-    - echo "PWD = ${PWD}""
+    - echo "PWD = ${PWD}"
     - echo "CI_PROJECT_DIR = ${CI_PROJECT_DIR}"
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" > /kaniko/.docker/config.json
