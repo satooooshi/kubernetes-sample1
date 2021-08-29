@@ -22,6 +22,9 @@ stages:
     SCRIPT_FILE: 'kaniko-build-production.sh'
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '${CI_COMMIT_BRANCH} == "feature/setup-ci"'
+      variables:
+        REPOSITORY: ''
 
 build-prod-article:
   extends: .build-prod
@@ -50,6 +53,9 @@ build-prod-website:
     SCRIPT_FILE: 'kaniko-build-develop.sh'
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '${CI_COMMIT_BRANCH} == "feature/setup-ci"'
+      variables:
+        REPOSITORY: ''
 
 build-dev-article:
   extends: .build-dev
