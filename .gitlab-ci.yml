@@ -15,6 +15,7 @@ stages:
     - echo "CI_PROJECT_DIR = ${CI_PROJECT_DIR}"
     - ls -la ./
     - ls -la ./scripts
+    - ls -la ./scripts/${SCRIPT_FILE}
     # DEBUG CODE (above this line)
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" > /kaniko/.docker/config.json
