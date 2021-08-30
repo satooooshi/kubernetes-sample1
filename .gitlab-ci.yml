@@ -1,5 +1,11 @@
 stages:
+  - test
   - build
+
+check-file-modes:
+  stage: test
+  script:
+    - bash ./scripts/check-scripts-file-mode.bash
 
 .build:
   stage: build
