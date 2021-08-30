@@ -13,5 +13,5 @@ scripts_dirs=(
   -name '*.sh' \
   -or \
   -name '*.bash' \
-  | xargs stat -c '%a  %n' \
-  | grep -v '755'
+  | xargs stat -c '%A  %n' \
+  | grep -vE '^...x'
