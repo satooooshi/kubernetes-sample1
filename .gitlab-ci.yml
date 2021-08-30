@@ -4,6 +4,8 @@ stages:
 
 check-file-modes:
   stage: test
+  image:
+    name: bash:5
   script:
     - bash ./scripts/check-scripts-file-mode.bash
 
