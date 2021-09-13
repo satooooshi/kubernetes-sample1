@@ -55,6 +55,13 @@ export default {
     'bootstrap-vue/nuxt',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    [
+      '@qonfucius/nuxt-prometheus-module',
+      {
+        host: '0.0.0.0',
+        port: 9091,
+      },
+    ],
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
