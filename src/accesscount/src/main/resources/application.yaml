@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: accesscount
+
 server:
   port: 8080
 
