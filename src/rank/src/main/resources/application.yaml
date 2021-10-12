@@ -23,3 +23,8 @@ management:
         enabled: false
       prometheus:
         enabled: true
+
+# disable tracing by default
+opentracing:
+  jaeger:
+    enabled: false

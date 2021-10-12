@@ -15,3 +15,11 @@ accesscount:
   url: http://accesscount:8080
 article:
   url: http://article:8080
+
+opentracing:
+  jaeger:
+    enabled: true
+    udp-sender:
+      host: localhost
+      port: 6831
+    log-spans: true
