@@ -13,7 +13,7 @@ logging:
 
 opentracing:
   jaeger:
-    enabled: true
+    enabled: false
     udp-sender:
       host: localhost
       port: 6831
