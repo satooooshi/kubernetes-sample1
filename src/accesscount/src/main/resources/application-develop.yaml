@@ -10,3 +10,11 @@ logging:
       creationline:
         k8sthinkit:
           sample1: DEBUG
+
+opentracing:
+  jaeger:
+    enabled: false
+    udp-sender:
+      host: localhost
+      port: 6831
+    log-spans: true

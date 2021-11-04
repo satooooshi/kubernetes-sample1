@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: rank
+
 server:
   port: 8080
 
@@ -23,3 +27,8 @@ management:
         enabled: false
       prometheus:
         enabled: true
+
+# disable tracing by default
+opentracing:
+  jaeger:
+    enabled: false

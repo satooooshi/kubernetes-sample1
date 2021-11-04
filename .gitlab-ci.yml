@@ -85,3 +85,34 @@ build-dev-website:
   variables:
     COMPONENT: website
 
+.build-feat:
+  extends: .build
+  variables:
+    SCRIPT_FILE: 'kaniko-build-feature.sh'
+    BRANCH: $CI_COMMIT_BRANCH
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
+    - if: '$CI_COMMIT_BRANCH == "feature/setup-ci"'
+      variables:
+        REPOSITORY: ''
+
+build-feat-article:
+  extends: .build-feat
+  variables:
+    COMPONENT: article
+
+build-feat-accesscount:
+  extends: .build-feat
+  variables:
+    COMPONENT: accesscount
+
+build-feat-rank:
+  extends: .build-feat
+  variables:
+    COMPONENT: rank
+
+build-feat-website:
+  extends: .build-feat
+  variables:
+    COMPONENT: website
+
