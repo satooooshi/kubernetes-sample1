@@ -17,6 +17,7 @@ spec:
       containers:
       - name: website
         image: website:dev
+        imagePullPolicy: Never
         envFrom:
         - configMapRef:
             name: website-config

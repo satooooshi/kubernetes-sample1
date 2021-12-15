@@ -17,6 +17,7 @@ spec:
       containers:
       - name: article
         image: article:dev
+        imagePullPolicy: Never
         env:
         - name: DEBUG
           value: 'false'

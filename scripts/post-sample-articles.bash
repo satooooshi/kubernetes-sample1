@@ -4,7 +4,10 @@ set -eu
 cd "$(dirname $0)"
 
 export ARTICLE_URL="${ARTICLE_URL:-http://localhost:8081}"
-export CURL_OPTS='-s'
+echo "hellool"
+#export ARTICLE_URL=http://172.22.116.93:46871
+#export CURL_OPTS='-s'
+export CURL_OPTS='-sS'
 export TEMPLATE_FILE=./article-body.template
 function sample_body() {
     if type envsubst &> /dev/null; then
@@ -35,6 +38,7 @@ export TITLE_BASES=( \
 
 export title_random_shift="${RANDOM}"
 for i in {1..10}; do
+    #echo "${ARTICLE_URL}/api/articles/"
     suffix="$(echo -n "${i}-$(date --iso-8601=ns)" | md5sum | base64 | sed -r -e 's/[^a-zA-Z]+//g' | head -c4)"
     suffix="${suffix,,}"
     title="(${suffix})${TITLE_BASES[$(( ( ${i} + ${title_random_shift} ) % ${#TITLE_BASES[@]} ))]}"

@@ -17,6 +17,7 @@ spec:
       containers:
       - name: rank
         image: rank:dev
+        imagePullPolicy: Never
         env:
         - name: DEBUG
           value: 'false'

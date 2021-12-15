@@ -17,6 +17,7 @@ spec:
       containers:
       - name: accesscount
         image: accesscount:dev
+        imagePullPolicy: Never
         env:
         - name: DEBUG
           value: 'false'
