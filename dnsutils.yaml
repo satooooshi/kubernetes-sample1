@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dnsutils
+spec:
+  containers:
+  - name: dnsutils
+    image: superheatedboy/dnsutils:latest
+    imagePullPolicy: Always
+    command: ["sleep","3600"]
